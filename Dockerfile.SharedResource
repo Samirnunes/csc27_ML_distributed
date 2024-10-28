@@ -1,9 +1,0 @@
-FROM golang:1.23.0-alpine3.20
-
-WORKDIR /app
-
-COPY ./sharedResource/sharedResource.go .
-
-RUN go build -o sharedResource sharedResource.go
-
-ENTRYPOINT [ "./sharedResource" ]

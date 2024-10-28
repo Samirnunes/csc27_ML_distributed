@@ -1,11 +1,15 @@
 import pandas as pd
-from xmlrpc.server import SimpleXMLRPCServer
-from ..models import MLModel, BaseModel
+from models import MLModel
+from models.base import BaseModel
 from typing import List, Dict, Union
+from xmlrpc.server import SimpleXMLRPCServer, SimpleXMLRPCRequestHandler
 
 # Define the types for features and labels
 FeatureType = Dict[str, List[Union[int, float, str]]]
 LabelType = List[Union[int, float, str]]
+
+host = "localhost"
+port = 8000
 
 class ServerML:
     """
@@ -15,23 +19,12 @@ class ServerML:
     with training data, and making predictions with the trained model.
     """
 
-    def __init__(self, host: str = "localhost", port: int = 8000) -> None:
+    def __init__(self) -> None:
         """
         Initializes the ServerML instance with the specified host and port.
-
-        Args:
-            host (str): The address where the server will be hosted. Default is "localhost".
-            port (int): The port number on which the server will listen. Default is 8000.
         """
-        self.host: str = host
-        self.port: int = port
         self.model: BaseModel | None = None
-        self.server: SimpleXMLRPCServer = SimpleXMLRPCServer((self.host, self.port))
 
-        # Registers the functions for RPC
-        self.server.register_function(self.predict, "predict")
-        self.server.register_function(self.fit, "fit")
-        self.server.register_function(self.initModel, "initModel")
 
     def initModel(self, algorithm: str = "dummy") -> None:
         """
@@ -40,7 +33,9 @@ class ServerML:
         Args:
             algorithm (str): The type of model to initialize. Default is "dummy".
         """
-        self.model = MLModel(algorithm)
+        self.model = MLModel[algorithm]()
+        print(f"\nInitialized the model {algorithm}")
+
 
     def fit(self, features: FeatureType, labels: LabelType) -> None:
         """
@@ -58,7 +53,10 @@ class ServerML:
         
         df_features = pd.DataFrame(features)
         df_labels = pd.Series(labels)
+        print("\nModel training...")
         self.model.fit(df_features, df_labels)
+        print("\nModel trained successfully")
+
 
     def predict(self, features: FeatureType) -> LabelType:
         """
@@ -82,36 +80,17 @@ class ServerML:
 
         return prediction_dict
 
-    def listen(self) -> None:
-        """
-        Starts the XML-RPC server and waits for client requests.
-        """
-        print(f"Server is running on {self.host}:{self.port}")
-        self.server.serve_forever()
 
-if __name__ == "__main__":
-    features_train = {
-        "feature1": [1.0, 2.0, 3.0, 4.0, 5.0],
-        "feature2": [10.0, 20.0, 30.0, 40.0, 50.0]
-    }
+class RequestHandler(SimpleXMLRPCRequestHandler):
+    rpc_paths = ('/')
 
-    labels_train = [100, 200, 300, 400, 500]
+server = SimpleXMLRPCServer(
+    (host, port),
+    requestHandler=RequestHandler,
+    allow_none=True,
+    logRequests=False
+)
 
-    features_test = {
-        "feature1": [6.0, 7.0],
-        "feature2": [60.0, 70.0]
-    }
-
-    serverML = ServerML()
-    
-    print("Inicializando o modelo Dummy...")
-    serverML.initModel(model="dummy")
-    serverML.listen()
-
-    print("Treinando o modelo com os dados de treino...")
-    serverML.fit(features_train, labels_train)
-
-    print("Fazendo previsões com novos dados...")
-    predictions = serverML.predict(features_test)
-
-    print("Previsões recebidas do servidor:", predictions)
+server.register_instance(ServerML())
+print(f"\n\nServer is running on {host}:{port}")
+server.serve_forever()

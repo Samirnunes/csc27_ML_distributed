@@ -1,59 +1,19 @@
 services:
 
     shared_resource:
-        container_name: shared
+        container_name: prototipo_ML
         build:
             context: .
-            dockerfile: "Dockerfile.SharedResource"
+            dockerfile: "Dockerfile"
         networks:
             app_network:
                 ipv4_address: 192.168.100.10
         stdin_open: true 
         tty: true        
 
-    fisrt_process:
-        container_name: p1
-        build:
-            context: .
-            dockerfile: "Dockerfile.Process"
-        command: ["1", "p1:10002", "p2:10003", "p3:10004"]
-        depends_on:
-            - shared_resource
-        networks:
-            app_network:
-                ipv4_address: 192.168.100.2
-        stdin_open: true 
-        tty: true
-
-    second_process:
-        container_name: p2
-        build:
-            context: .
-            dockerfile: "Dockerfile.Process"
-        command: ["2", "p1:10002", "p2:10003", "p3:10004"]
-        depends_on:
-            - shared_resource
-        networks:
-            app_network:
-                ipv4_address: 192.168.100.3
-        stdin_open: true 
-        tty: true
-
-    third_process:
-        container_name: p3
-        build:
-            context: .
-            dockerfile: "Dockerfile.Process"
-        command: ["3", "p1:10002", "p2:10003", "p3:10004"]
-        depends_on:
-            - shared_resource
-        networks:
-            app_network:
-                ipv4_address: 192.168.100.4
-        stdin_open: true 
-        tty: true
 
 networks:
+
     app_network:
         driver: bridge
         ipam:

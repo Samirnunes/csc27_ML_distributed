@@ -1,6 +1,8 @@
-from .dummy import DummyModel
 from .base import BaseModel
+from .dummy import DummyModel
+from .linearRegression import LinearOrLogisticModel
 
 MLModel = {
-    "dummy": DummyModel
+    "dummy": DummyModel,
+    "linearRegression": LinearOrLogisticModel
 }
