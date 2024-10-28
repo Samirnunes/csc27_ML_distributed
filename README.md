@@ -30,11 +30,11 @@ O modelo é servido localmente pelo server `./serverML.py` na porta `8000`. Um e
     ```
     Terminal 1:
     ```bash
-    python3 ./serverML.py
+    python ./serverML.py
     ```
     Terminal 2:
     ```bash
-    python3 ./example_client.py
+    python ./example_client.py
     ```
     
 Na pasta `dados` estão os dados do desafio *Kaggle* [House Prices](https://www.kaggle.com/competitions/house-prices-advanced-regression-techniques) para serem usados na prototipação. Lá, os dados de treinamento foram divididos em A, B e C, já pensando em como nossa aplicação deve funcionar de forma distribuída, cada worker com uma parte dos dados. 
