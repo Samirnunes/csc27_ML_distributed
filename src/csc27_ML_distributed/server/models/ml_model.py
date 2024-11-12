@@ -3,7 +3,7 @@ from csc27_ML_distributed.server.models.ml import DummyModel, LinearOrLogisticMo
 
 
 class MLModel:
-    _MODELS = {"dummy": DummyModel, "linear": LinearOrLogisticModel}
+    _MODELS = {"dummy": DummyModel(), "linear": LinearOrLogisticModel()}
 
     def __getitem__(self, key: str) -> BaseModel:
         return self._MODELS[key]
