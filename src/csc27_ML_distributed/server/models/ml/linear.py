@@ -7,6 +7,7 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from csc27_ML_distributed.server.models.base import BaseModel
 
+
 class LinearOrLogisticModel(BaseModel):
     """
     A model that automatically handles preprocessing steps, including imputing missing values,
@@ -23,7 +24,6 @@ class LinearOrLogisticModel(BaseModel):
         self.label_encoder = None
         self.preprocessor = None
 
-        
     def fit(self, features: pd.DataFrame, labels: pd.Series) -> None:
         """
         Automatically detects feature types (numeric or categorical) and trains either a LinearRegression
@@ -36,25 +36,33 @@ class LinearOrLogisticModel(BaseModel):
         """
         # Detecta colunas numéricas e categóricas automaticamente
         numeric_features = features.select_dtypes(include=[np.number]).columns.tolist()
-        categorical_features = features.select_dtypes(exclude=[np.number]).columns.tolist()
+        categorical_features = features.select_dtypes(
+            exclude=[np.number]
+        ).columns.tolist()
 
         # Preprocessing for numeric features
-        numeric_transformer = Pipeline(steps=[
-            ('imputer', SimpleImputer(strategy='mean')),
-            ('scaler', StandardScaler())
-        ])
+        numeric_transformer = Pipeline(
+            steps=[
+                ("imputer", SimpleImputer(strategy="mean")),
+                ("scaler", StandardScaler()),
+            ]
+        )
 
         # Preprocessing for categorical features
-        categorical_transformer = Pipeline(steps=[
-            ('imputer', SimpleImputer(strategy='most_frequent')),
-            ('onehot', OneHotEncoder(handle_unknown='ignore'))
-        ])
+        categorical_transformer = Pipeline(
+            steps=[
+                ("imputer", SimpleImputer(strategy="most_frequent")),
+                ("onehot", OneHotEncoder(handle_unknown="ignore")),
+            ]
+        )
 
         # Column transformer que aplica as transformações às colunas numéricas e categóricas
-        self.preprocessor = ColumnTransformer(transformers=[
-            ('num', numeric_transformer, numeric_features),
-            ('cat', categorical_transformer, categorical_features)
-        ])
+        self.preprocessor = ColumnTransformer(
+            transformers=[
+                ("num", numeric_transformer, numeric_features),
+                ("cat", categorical_transformer, categorical_features),
+            ]
+        )
 
         # Aplica o pré-processamento nos dados de entrada
         features = self.preprocessor.fit_transform(features)
@@ -65,7 +73,6 @@ class LinearOrLogisticModel(BaseModel):
             labels = self.label_encoder.fit_transform(labels)
 
         self.model.fit(features, labels)
-
 
     def predict(self, features: pd.DataFrame) -> np.ndarray:
         """

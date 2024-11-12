@@ -18,7 +18,7 @@ class _MLServer(BaseServer):
     The server allows initializing a machine learning model, fitting the model
     with training data, and making predictions with the trained model.
     """
-    
+
     CONFIG = ML_SERVER_CONFIG
 
     def __init__(self) -> None:

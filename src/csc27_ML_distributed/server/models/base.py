@@ -1,11 +1,14 @@
 from abc import ABC
 
+
 class BaseServer(ABC):
     pass
+
 
 import pandas as pd
 import numpy as np
 from abc import ABC, abstractmethod
+
 
 class BaseModel(ABC):
     """
@@ -28,7 +31,6 @@ class BaseModel(ABC):
             NotImplementedError: If the method is not implemented in a subclass.
         """
         pass
-    
 
     @abstractmethod
     def predict(self, features: pd.DataFrame) -> np.ndarray:

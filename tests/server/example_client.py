@@ -1,6 +1,6 @@
 import pandas as pd
 from xmlrpc.client import ServerProxy
- 
+
 
 modelName = "dummy"
 
@@ -8,11 +8,11 @@ df_train = pd.read_csv("./data/train_A.csv")
 df_test = pd.read_csv("./data/test.csv")
 
 # Dados de treino
-features_train = df_train.drop(columns=['SalePrice']).to_dict(orient='list')
-labels_train = df_train['SalePrice'].tolist()
+features_train = df_train.drop(columns=["SalePrice"]).to_dict(orient="list")
+labels_train = df_train["SalePrice"].tolist()
 
 # Dados para previsão
-features_test = df_test.to_dict(orient='list')
+features_test = df_test.to_dict(orient="list")
 
 # Conecta-se ao servidor XML-RPC
 server = ServerProxy("http://localhost:8000/")

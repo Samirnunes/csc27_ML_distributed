@@ -3,12 +3,13 @@ import numpy as np
 from sklearn.dummy import DummyRegressor
 from csc27_ML_distributed.server.models.base import BaseModel
 
+
 class DummyModel(BaseModel):
     """
     Dummy model implementation that inherits from BaseModel.
 
-    This model uses scikit-learn's DummyRegressor, which makes predictions 
-    based on a simple strategy, such as always predicting the mean of the 
+    This model uses scikit-learn's DummyRegressor, which makes predictions
+    based on a simple strategy, such as always predicting the mean of the
     target values.
     """
 
@@ -17,15 +18,14 @@ class DummyModel(BaseModel):
         Initializes the DummyModel with a specified strategy.
 
         Args:
-            strategy (str): The strategy used by DummyRegressor for making predictions. 
-                Default is "mean". Possible values include "mean", "median", "quantile", 
+            strategy (str): The strategy used by DummyRegressor for making predictions.
+                Default is "mean". Possible values include "mean", "median", "quantile",
                 and "constant".
 
         Attributes:
             model (DummyRegressor): The dummy regressor instance.
         """
         self.model = DummyRegressor(strategy=strategy)
-
 
     def fit(self, features: pd.DataFrame, labels: pd.Series) -> None:
         """
@@ -36,7 +36,6 @@ class DummyModel(BaseModel):
             labels (pd.Series): A Series containing the target labels.
         """
         self.model.fit(features, labels)
-        
 
     def predict(self, features: pd.DataFrame) -> np.ndarray:
         """
