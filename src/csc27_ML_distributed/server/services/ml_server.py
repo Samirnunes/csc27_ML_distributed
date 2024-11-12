@@ -4,9 +4,12 @@ from csc27_ML_distributed.server.models.base import BaseServer
 from csc27_ML_distributed.server.models.base import BaseModel
 from csc27_ML_distributed.server.models.ml_model import MLModel
 from csc27_ML_distributed.server.services.wrappers import RPC
+from csc27_ML_distributed.server.models.config import ML_SERVER_CONFIG
+from csc27_ML_distributed.server.log import logger
 
 FeatureType = Dict[str, List[Union[int, float, str]]]
 LabelType = List[Union[int, float, str]]
+
 
 class _MLServer(BaseServer):
     """
@@ -15,24 +18,15 @@ class _MLServer(BaseServer):
     The server allows initializing a machine learning model, fitting the model
     with training data, and making predictions with the trained model.
     """
+    
+    CONFIG = ML_SERVER_CONFIG
 
     def __init__(self) -> None:
         """
         Initializes the MLServer instance with the specified host and port.
         """
-        self.model: BaseModel | None = None
-
-
-    def initModel(self, algorithm: str = "dummy") -> None:
-        """
-        Initializes the machine learning model.
-
-        Args:
-            algorithm (str): The type of model to initialize. Default is "dummy".
-        """
-        self.model = MLModel[algorithm]()
-        print(f"\nInitialized the model {algorithm}")
-
+        logger.info(f"**Serving with {self.CONFIG.MODEL} model**")
+        self.model: BaseModel = MLModel()[self.CONFIG.MODEL]
 
     def fit(self, features: FeatureType, labels: LabelType) -> None:
         """
@@ -41,19 +35,12 @@ class _MLServer(BaseServer):
         Args:
             features (FeatureType): A dictionary containing the features as a list of numerical or string values.
             labels (LabelType): A list containing the labels (target values).
-        
-        Raises:
-            Exception: If the model has not been initialized using `initModel()`.
         """
-        if self.model is None:
-            raise Exception("Uninitialized model. Call initModel() first.")
-        
         df_features = pd.DataFrame(features)
         df_labels = pd.Series(labels)
         print("\nModel training...")
         self.model.fit(df_features, df_labels)
         print("\nModel trained successfully")
-
 
     def predict(self, features: FeatureType) -> LabelType:
         """
@@ -64,24 +51,19 @@ class _MLServer(BaseServer):
 
         Returns:
             LabelType: A list of predicted values.
-
-        Raises:
-            Exception: If the model has not been initialized using `initModel()`.
         """
-        if self.model is None:
-            raise Exception("Uninitialized model. Call initModel() first.")
-        
         df_features = pd.DataFrame(features)
         prediction = self.model.predict(df_features)
         prediction_dict: LabelType = prediction.tolist()
 
         return prediction_dict
-    
+
+
 class RPCMLServer:
     """Façade for MLServer + RPC classes"""
-    
+
     def __init__(self):
-        self._server = RPC(_MLServer())
-    
+        self._rpc = RPC(_MLServer())
+
     def run(self):
-        self._server.serve()
+        self._rpc.serve()

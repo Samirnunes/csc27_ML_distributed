@@ -23,5 +23,5 @@ class RPC:
         
     def serve(self):
         self._rpc.server_activate()
-        logger.info(f"**Server is running on {self.CONFIG.HOST}:{self.CONFIG.PORT}")
+        logger.info(f"**Server is running on {self.CONFIG.HOST}:{self.CONFIG.PORT}**")
         self._rpc.serve_forever()
