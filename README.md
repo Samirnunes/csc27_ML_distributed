@@ -24,17 +24,22 @@ O modelo é servido localmente pelo server `./serverML.py` na porta `8000`. Um e
 
 - Para executar essa parte do projeto:
 
-    ```bash
-    make install
-    source ./.venv/bin/activate
+    Instale o Poetry: https://python-poetry.org/docs/ 
+    
+    No terminal:
+
     ```
+    > poetry install
+    ```
+
     Terminal 1:
-    ```bash
-    python ./serverML.py
     ```
+    poetry run python ./serverML.py
+    ```
+
     Terminal 2:
-    ```bash
-    python ./example_client.py
+    ```
+    poetry run ./example_client.py
     ```
     
 Na pasta `dados` estão os dados do desafio *Kaggle* [House Prices](https://www.kaggle.com/competitions/house-prices-advanced-regression-techniques) para serem usados na prototipação. Lá, os dados de treinamento foram divididos em A, B e C, já pensando em como nossa aplicação deve funcionar de forma distribuída, cada worker com uma parte dos dados. 
