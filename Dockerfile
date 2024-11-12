@@ -1,31 +1,33 @@
-# Usa uma versão correta da imagem base do Golang
+FROM --platform=linux/amd64 python:3.12-slim
 FROM golang:1.23.0-alpine3.20
 
-# Define o diretório de trabalho dentro do container
+ENV PORT 80
+ENV FASTAPI_APP_NAME csc27_ML_distributed/server
+
+EXPOSE ${PORT}
 WORKDIR /app
 
-# Copia os arquivos necessários para o container
-COPY ./data/train_A.csv ./data/train.csv
-COPY ./models/ ./models/
-COPY ./src/ ./src/
-COPY ./Makefile ./Makefile
-COPY ./requirements.txt ./requirements.txt
-COPY ./serverML.py ./serverML.py
-COPY ./scripts/start.sh ./start.sh
+# System update
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends netcat-openbsd curl git wget bash ssh git openssh-client && \
+    rm -rf /var/lib/apt/lists/* /var/tmp/*
 
-# Dá permissão de execução ao script start.sh
-RUN chmod +x ./start.sh
+# Install Poetry
+RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python && \
+    cd /usr/local/bin && \
+    ln -s /opt/poetry/bin/poetry && \
+    poetry config virtualenvs.create false
 
-# Instala make e Python com pip, já que você tem um requirements.txt
-RUN apk add --no-cache bash make python3 py3-pip
+# Copy poetry.lock* in case it doesn't exist in the repo
+COPY ./pyproject.toml ./poetry.lock* ./
 
-# Instala o GCC e dependências para compilar pacotes Python como scikit-learn
-RUN apk add --no-cache gcc g++ musl-dev libc-dev linux-headers python3-dev
+ARG INSTALL_DEV=false
+RUN poetry lock --no-update && \
+    bash -c "if [ $INSTALL_DEV == 'true' ] ; then poetry install --no-root ; else poetry install --no-root --only main ; fi"
 
-# Executa o make install para instalar dependências do projeto Go
-RUN make install
+COPY . ./
 
-RUN source ./.venv/bin/activate
+CMD ["/bin/bash", "-c", "poetry run python src/${FASTAPI_APP_NAME}/api/app.py"]
 
 # Define o comando de inicialização
-CMD ["./start.sh"]
+#CMD ["./start.sh"]

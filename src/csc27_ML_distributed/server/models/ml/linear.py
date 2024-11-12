@@ -5,7 +5,7 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder, LabelEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
-from .base import BaseModel
+from csc27_ML_distributed.server.models.base import BaseModel
 
 class LinearOrLogisticModel(BaseModel):
     """

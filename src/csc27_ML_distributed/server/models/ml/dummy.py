@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.dummy import DummyRegressor
-from .base import BaseModel
+from csc27_ML_distributed.server.models.base import BaseModel
 
 class DummyModel(BaseModel):
     """

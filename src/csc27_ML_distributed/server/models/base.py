@@ -1,6 +1,10 @@
+from abc import ABC
+
+class BaseServer(ABC):
+    pass
+
 import pandas as pd
 import numpy as np
-from sklearn.dummy import DummyRegressor
 from abc import ABC, abstractmethod
 
 class BaseModel(ABC):

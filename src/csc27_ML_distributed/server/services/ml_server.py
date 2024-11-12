@@ -1,17 +1,14 @@
 import pandas as pd
-from models import MLModel
-from models.base import BaseModel
 from typing import List, Dict, Union
-from xmlrpc.server import SimpleXMLRPCServer, SimpleXMLRPCRequestHandler
+from csc27_ML_distributed.server.models.base import BaseServer
+from csc27_ML_distributed.server.models.base import BaseModel
+from csc27_ML_distributed.server.models.ml_model import MLModel
+from csc27_ML_distributed.server.services.wrappers import RPC
 
-# Define the types for features and labels
 FeatureType = Dict[str, List[Union[int, float, str]]]
 LabelType = List[Union[int, float, str]]
 
-host = "localhost"
-port = 8000
-
-class ServerML:
+class _MLServer(BaseServer):
     """
     A class to manage a machine learning server that communicates using XML-RPC.
 
@@ -21,7 +18,7 @@ class ServerML:
 
     def __init__(self) -> None:
         """
-        Initializes the ServerML instance with the specified host and port.
+        Initializes the MLServer instance with the specified host and port.
         """
         self.model: BaseModel | None = None
 
@@ -79,18 +76,12 @@ class ServerML:
         prediction_dict: LabelType = prediction.tolist()
 
         return prediction_dict
-
-
-class RequestHandler(SimpleXMLRPCRequestHandler):
-    rpc_paths = ('/')
-
-server = SimpleXMLRPCServer(
-    (host, port),
-    requestHandler=RequestHandler,
-    allow_none=True,
-    logRequests=False
-)
-
-server.register_instance(ServerML())
-print(f"\n\nServer is running on {host}:{port}")
-server.serve_forever()
+    
+class RPCMLServer:
+    """Façade for MLServer + RPC classes"""
+    
+    def __init__(self):
+        self._server = RPC(_MLServer())
+    
+    def run(self):
+        self._server.serve()
