@@ -33,17 +33,19 @@ O modelo é servido localmente pelo server `./serverML.py` na porta `8000`. Um e
     ```
 
     Terminal 1:
+
+    (Em produção)
     ```
     poetry run python src/csc27_ML_distributed/server/api/app.py
     ```
-    (Em produção)
 
     ou
 
+    (Rodando local para desenvolvimento)
     ```
     poetry run python src/csc27_ML_distributed/server/api/app.py --local
     ```
-    (Rodando local para desenvolvimento)
+
 
     Terminal 2:
     ```
