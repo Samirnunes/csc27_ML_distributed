@@ -15,7 +15,7 @@ labels_train = df_train["SalePrice"].tolist()
 features_test = df_test.to_dict(orient="list")
 
 # Conecta-se ao servidor XML-RPC
-server = ServerProxy("http://localhost:8000/")
+server = ServerProxy("http://localhost:8080/")
 
 # Treina o modelo com os dados de treino
 print("Treinando o modelo com os dados de treino...")

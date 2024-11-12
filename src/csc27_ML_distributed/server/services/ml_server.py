@@ -26,7 +26,7 @@ class _MLServer(BaseServer):
         Initializes the MLServer instance with the specified host and port.
         """
         logger.info(f"**Serving with {self.CONFIG.MODEL} model**")
-        self.model: BaseModel = MLModel()[self.CONFIG.MODEL]
+        self.model: BaseModel = MLModel()[self.CONFIG.MODEL]()
 
     def fit(self, features: FeatureType, labels: LabelType) -> None:
         """
@@ -39,7 +39,7 @@ class _MLServer(BaseServer):
         df_features = pd.DataFrame(features)
         df_labels = pd.Series(labels)
         print("\nModel training...")
-        self.model.fit(df_features, df_labels)
+        self.model.fit(features=df_features, labels=df_labels)
         print("\nModel trained successfully")
 
     def predict(self, features: FeatureType) -> LabelType:
