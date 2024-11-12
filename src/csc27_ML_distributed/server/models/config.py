@@ -12,7 +12,7 @@ if _parse_args().local:
     os.environ["PORT"] = "8080"
     os.environ["MODEL"] = "dummy"
 else:
-    # In production, this should not exist:
+    # In production, this should not exist,
     # these variables must be injected in the env
     os.environ["HOST"] = "0:0:0:0"
     os.environ["PORT"] = "80"
