@@ -17,10 +17,6 @@ features_test = df_test.to_dict(orient="list")
 # Conecta-se ao servidor XML-RPC
 server = ServerProxy("http://localhost:8000/")
 
-# Inicializa o modelo Dummy no servidor
-print(f"Inicializando o modelo {modelName} ...")
-server.initModel(modelName)
-
 # Treina o modelo com os dados de treino
 print("Treinando o modelo com os dados de treino...")
 server.fit(features_train, labels_train)
