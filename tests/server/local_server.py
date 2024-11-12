@@ -4,8 +4,8 @@ from xmlrpc.client import ServerProxy
 
 modelName = "dummy"
 
-df_train = pd.read_csv("./data/train_A.csv")
-df_test = pd.read_csv("./data/test.csv")
+df_train = pd.read_csv("../../data/train_A.csv")
+df_test = pd.read_csv("../../data/test.csv")
 
 # Dados de treino
 features_train = df_train.drop(columns=["SalePrice"]).to_dict(orient="list")
