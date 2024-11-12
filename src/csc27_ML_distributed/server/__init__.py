@@ -1,1 +1,1 @@
-from .services.ml_server import RPCMLServer
+from .services.rpc_ml_server import RPCMLServer
