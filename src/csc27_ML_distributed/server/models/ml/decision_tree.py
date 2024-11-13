@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from sklearn.linear_model import LinearRegression, LogisticRegression
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
@@ -8,11 +8,11 @@ from sklearn.pipeline import Pipeline
 from csc27_ML_distributed.server.models.base import BaseModel
 
 
-class LinearRegressorModel(BaseModel):
+class DecisionTreeRegressorModel(BaseModel):
     def __init__(self) -> None:
-        self.model = LinearRegression()
-        self.label_encoder = None
-        self.preprocessor = None
+        self._model = DecisionTreeRegressor()
+        self._label_encoder = None
+        self._preprocessor = None
 
     def fit(self, features: pd.DataFrame, labels: pd.Series) -> None:
         numeric_features = features.select_dtypes(include=[np.number]).columns.tolist()
@@ -34,26 +34,27 @@ class LinearRegressorModel(BaseModel):
             ]
         )
 
-        self.preprocessor = ColumnTransformer(
+        self._preprocessor = ColumnTransformer(
             transformers=[
                 ("num", numeric_transformer, numeric_features),
                 ("cat", categorical_transformer, categorical_features),
             ]
         )
 
-        features = self.preprocessor.fit_transform(features)
-        self.model.fit(features, labels)
+        features = self._preprocessor.fit_transform(features)
+        self._model.fit(features, labels)
 
     def predict(self, features: pd.DataFrame) -> np.ndarray:
-        features = self.preprocessor.transform(features)
-        predictions = self.model.predict(features)
+        features = self._preprocessor.transform(features)
+        predictions = self._model.predict(features)
         return predictions
 
-class LinearClassifierModel(BaseModel):
+
+class DecisionTreeClassifierModel(BaseModel):
     def __init__(self) -> None:
-        self.model = LogisticRegression()
-        self.label_encoder = None
-        self.preprocessor = None
+        self._model = DecisionTreeClassifier()
+        self._label_encoder = None
+        self._preprocessor = None
 
     def fit(self, features: pd.DataFrame, labels: pd.Series) -> None:
         numeric_features = features.select_dtypes(include=[np.number]).columns.tolist()
@@ -75,17 +76,17 @@ class LinearClassifierModel(BaseModel):
             ]
         )
 
-        self.preprocessor = ColumnTransformer(
+        self._preprocessor = ColumnTransformer(
             transformers=[
                 ("num", numeric_transformer, numeric_features),
                 ("cat", categorical_transformer, categorical_features),
             ]
         )
 
-        features = self.preprocessor.fit_transform(features)
-        self.model.fit(features, labels)
+        features = self._preprocessor.fit_transform(features)
+        self._model.fit(features, labels)
 
     def predict(self, features: pd.DataFrame) -> np.ndarray:
-        features = self.preprocessor.transform(features)
-        predictions = self.model.predict(features)
+        features = self._preprocessor.transform(features)
+        predictions = self._model.predict(features)
         return predictions

@@ -14,7 +14,7 @@ features_test = df_test.to_dict(orient="list")
 # Conecta-se ao servidor XML-RPC
 server = ServerProxy("http://localhost:8080/")
 
-server.set_model("linear")
+server.set_model("tree-regressor")
 
 # Treina o modelo com os dados de treino
 print("Treinando o modelo com os dados de treino...")

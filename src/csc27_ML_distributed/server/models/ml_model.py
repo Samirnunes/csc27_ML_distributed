@@ -1,9 +1,22 @@
 from typing import List
 from csc27_ML_distributed.server.models.base import BaseModel
-from csc27_ML_distributed.server.models.ml import DummyModel, LinearOrLogisticModel
+from csc27_ML_distributed.server.models.ml import (
+    DummyModel,
+    LinearClassifierModel,
+    LinearRegressorModel,
+    DecisionTreeClassifierModel,
+    DecisionTreeRegressorModel,
+)
+
 
 class MLModelDict:
-    _MODELS = {"dummy": DummyModel(), "linear": LinearOrLogisticModel()}
+    _MODELS = {
+        "dummy": DummyModel(),
+        "linear-classifier": LinearClassifierModel(),
+        "linear-regressor": LinearRegressorModel(),
+        "tree-classifier": DecisionTreeClassifierModel(),
+        "tree-regressor": DecisionTreeRegressorModel(),
+    }
 
     def __getitem__(self, key: str) -> BaseModel:
         return self._MODELS[key]
@@ -13,9 +26,9 @@ class MLModelDict:
 
     def __repr__(self):
         return repr(self._MODELS)
-    
+
     def values(self) -> List[BaseModel]:
         return list(self._MODELS.values())
-    
+
     def keys(self) -> List[str]:
         return list(self._MODELS.keys())
