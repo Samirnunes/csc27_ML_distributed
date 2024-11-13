@@ -1,14 +1,17 @@
-# docker build -f Dockerfile.server -t <app_name> .
-# docker run -d --name <app_name> -e ENVIRONMENT=production <app_name>:<tag>
+# docker build -f Dockerfile.server -t ml-distributed-server .
+# docker run -d --name ml-distributed-server -e ENVIRONMENT=production ml-distributed-server
 
 FROM --platform=linux/amd64 python:3.12-slim
 
-ENV PYTHONUNBUFFERED 1
-ENV APP_NAME csc27_ML_distributed/server
 ENV PORT 80
+ENV APP_NAME csc27_ML_distributed/server
+ENV WORKDIR /app
 
+ENV PYTHONPATH ${WORKDIR}/src
+ENV PYTHONUNBUFFERED 1
+
+WORKDIR ${WORKDIR}
 EXPOSE ${PORT}
-WORKDIR /app
 
 # System update
 RUN apt-get update && \

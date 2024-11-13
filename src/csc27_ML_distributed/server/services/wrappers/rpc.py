@@ -11,7 +11,7 @@ class RPC:
     CONFIG = RPC_CONFIG
 
     class _RequestHandler(SimpleXMLRPCRequestHandler):
-        rpc_paths = "/"
+        rpc_paths = ""
 
     def __init__(self, server: BaseServer):
         self._rpc = SimpleXMLRPCServer(

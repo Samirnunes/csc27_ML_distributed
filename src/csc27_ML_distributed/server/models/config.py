@@ -18,9 +18,9 @@ if _parse_args().local:
 else:
     # In production, this should not exist,
     # these variables must be injected in the env
-    os.environ["HOST"] = "0:0:0:0"
+    os.environ["HOST"] = "0.0.0.0"
     os.environ["PORT"] = "80"
-    os.environ["MODEL"] = "linear"
+    os.environ["MODEL"] = "tree-regressor"
 
 
 class _RPCConfig(BaseSettings):
