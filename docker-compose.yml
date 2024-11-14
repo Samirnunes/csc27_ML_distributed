@@ -1,19 +1,57 @@
-services:
+x-global-envs:
+  &global-envs
+    HOST: 0.0.0.0
+    PORT: 80
+    PROBLEM_TYPE: regression
+    MODEL: tree-regressor
+    LABEL: SalePrice
+    RANDOM_STATE: 0
+    TEST_SIZE: 0.3
 
-    shared_resource:
-        container_name: prototipo_ML
+services:
+    MLServerA:
+        container_name: MLServerA
         build:
             context: .
-            dockerfile: "Dockerfile"
+            dockerfile: "Dockerfile.server"
+        environment:
+            <<: *global-envs
+            DATA_DIR: data/A
         networks:
             app_network:
                 ipv4_address: 192.168.100.10
         stdin_open: true 
-        tty: true        
+        tty: true
 
+    MLServerB:
+        container_name: MLServerB
+        build:
+            context: .
+            dockerfile: "Dockerfile.server"
+        environment:
+            <<: *global-envs
+            DATA_DIR: data/B
+        networks:
+            app_network:
+                ipv4_address: 192.168.100.11
+        stdin_open: true 
+        tty: true
+
+    MLServerC:
+        container_name: MLServerC
+        build:
+            context: .
+            dockerfile: "Dockerfile.server"
+        environment:
+            <<: *global-envs
+            DATA_DIR: data/C
+        networks:
+            app_network:
+                ipv4_address: 192.168.100.12
+        stdin_open: true 
+        tty: true
 
 networks:
-
     app_network:
         driver: bridge
         ipam:
