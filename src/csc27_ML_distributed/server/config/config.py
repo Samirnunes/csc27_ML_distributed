@@ -16,16 +16,17 @@ def _verify_local_config() -> argparse.Namespace:
         os.environ["PYTHONPATH"] = "src/"
         os.environ["HOST"] = "localhost"
         os.environ["PORT"] = "8080"
-        os.environ["MODEL"] = "dummy"
-        os.environ["DATA_DIR"] = "data/A"
+    else:
+        os.environ["HOST"] = "0.0.0.0"
+        os.environ["PORT"] = "80"
 
 
 _verify_local_config()
 
 
 class _RPCConfig(BaseSettings):
-    HOST: str = "localhost"
-    PORT: int = "8080"
+    HOST: str = "0.0.0.0"
+    PORT: int = "80"
 
 
 class _MLConfig(BaseSettings):

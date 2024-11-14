@@ -63,6 +63,7 @@ class MLServer(BaseServer):
         new_model = self._MODEL_DICT[model]
         logger.info(f"**Changing model from {self._model} to {new_model}")
         self._model = new_model
+        return json.dumps("ok")
 
     def fit(self) -> None:
         """
@@ -72,6 +73,7 @@ class MLServer(BaseServer):
         self._model.fit(features=self._X_train, labels=self._y_train)
         logger.info("Model trained successfully")
         self._fitted = True
+        return json.dumps("ok")
 
     def predict(self, features: FeatureType) -> str:
         """
