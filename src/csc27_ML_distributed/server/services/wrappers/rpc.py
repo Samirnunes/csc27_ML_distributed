@@ -2,7 +2,7 @@ from xmlrpc.server import SimpleXMLRPCRequestHandler, SimpleXMLRPCServer
 
 from csc27_ML_distributed.server.log import logger
 from csc27_ML_distributed.server.models.base import BaseServer
-from csc27_ML_distributed.server.models.config import RPC_CONFIG
+from csc27_ML_distributed.server.config import RPC_CONFIG
 
 
 class RPC:

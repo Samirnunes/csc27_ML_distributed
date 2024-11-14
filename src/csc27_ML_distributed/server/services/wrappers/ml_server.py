@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 
 from csc27_ML_distributed.server.log import logger
 from csc27_ML_distributed.server.models.base import BaseModel, BaseServer
-from csc27_ML_distributed.server.models.config import ML_SERVER_CONFIG
+from csc27_ML_distributed.server.config import ML_SERVER_CONFIG
 from csc27_ML_distributed.server.models.ml_metric import (
     MLClassificationMetrics,
     MLRegressionMetrics,
