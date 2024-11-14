@@ -9,8 +9,8 @@ x-global-envs:
     TEST_SIZE: 0.3
 
 services:
-    MLServerA:
-        container_name: MLServerA
+    ml-server-a:
+        container_name: ml-server-a
         build:
             context: .
             dockerfile: "Dockerfile.server"
@@ -23,8 +23,8 @@ services:
         stdin_open: true 
         tty: true
 
-    MLServerB:
-        container_name: MLServerB
+    ml-server-b:
+        container_name: ml-server-b
         build:
             context: .
             dockerfile: "Dockerfile.server"
@@ -37,8 +37,8 @@ services:
         stdin_open: true 
         tty: true
 
-    MLServerC:
-        container_name: MLServerC
+    ml-server-c:
+        container_name: ml-server-c
         build:
             context: .
             dockerfile: "Dockerfile.server"
