@@ -6,45 +6,36 @@ from xmlrpc.client import ServerProxy
 # Conecta-se ao servidor XML-RPC
 
 logger.info("Connecting to ML servers: A, B, C")
+servers_names = ["a", "b", "c"]
 server_a = ServerProxy("http://localhost:80/")
 server_b = ServerProxy("http://localhost:81/")
 server_c = ServerProxy("http://localhost:82/")
 
+servers_names = list(map(lambda x: "server_" + x, servers_names))
+servers = [server_a, server_b, server_c]
+models = []
+metrics = dict.fromkeys(servers_names)
+
 logger.info("Fitting server's models...")
-server_a.fit()
-server_b.fit()
-server_c.fit()
-
 logger.info("Receiving models...")
-model_a = server_a.send_model()
-model_b = server_b.send_model()
-model_c = server_c.send_model()
-
-models = [model_a, model_b, model_c]
+for server in servers:
+    server.fit()
+    models.append(server.send_model())
 
 logger.info("Getting evaluation metrics...")
-metrics_a = server_a.evaluate(models)
-metrics_b = server_b.evaluate(models)
-metrics_c = server_c.evaluate(models)
-
-logger.info("Evaluating metrics...")
-metrics = {
-    "Server A": json.loads(metrics_a),
-    "Server B": json.loads(metrics_b),
-    "Server C": json.loads(metrics_c),
-}
-
+for i, server in enumerate(servers):
+    metrics[servers_names[i]] = json.loads(server.evaluate(models))
 
 def aggregate(metrics: Dict[str, Dict[str, float]]):
     aggregated = dict.fromkeys(
         metrics.keys(), dict.fromkeys(list(metrics.values())[0].keys(), 0)
     )
-    for server, metrics_dict in metrics.items():
+    for server_name, metrics_dict in metrics.items():
         for metric, value in metrics_dict.items():
-            aggregated[server][metric] += value
-    for server in metrics.keys():
+            aggregated[server_name][metric] += value
+    for server_name in metrics.keys():
         for metric in metrics_dict.keys():
-            aggregated[server][metric] = aggregated[server][metric] / len(metrics)
+            aggregated[server_name][metric] = aggregated[server_name][metric] / len(metrics)
 
     return aggregated
 
