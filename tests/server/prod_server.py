@@ -28,14 +28,13 @@ for i, server in enumerate(servers):
 
 def aggregate(metrics: Dict[str, Dict[str, float]]):
     aggregated = dict.fromkeys(
-        metrics.keys(), dict.fromkeys(list(metrics.values())[0].keys(), 0)
+        list(metrics.values())[0].keys(), 0
     )
-    for server_name, metrics_dict in metrics.items():
+    for metrics_dict in metrics.values():
         for metric, value in metrics_dict.items():
-            aggregated[server_name][metric] += value
-    for server_name in metrics.keys():
-        for metric in metrics_dict.keys():
-            aggregated[server_name][metric] = aggregated[server_name][metric] / len(metrics)
+            aggregated[metric] += value
+    for metric in metrics_dict.keys():
+        aggregated[metric]= aggregated[metric] / len(metrics)
 
     return aggregated
 

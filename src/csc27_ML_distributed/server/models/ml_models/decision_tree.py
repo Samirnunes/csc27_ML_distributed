@@ -10,7 +10,7 @@ from csc27_ML_distributed.server.models.base import BaseModel
 
 class DecisionTreeRegressorModel(BaseModel):
     def __init__(self) -> None:
-        self._model = DecisionTreeRegressor()
+        self._model = DecisionTreeRegressor(max_depth=3, max_leaf_nodes=10)
         self._label_encoder = None
         self._preprocessor = None
 
@@ -52,7 +52,7 @@ class DecisionTreeRegressorModel(BaseModel):
 
 class DecisionTreeClassifierModel(BaseModel):
     def __init__(self) -> None:
-        self._model = DecisionTreeClassifier()
+        self._model = DecisionTreeClassifier(max_depth=3, max_leaf_nodes=10)
         self._label_encoder = None
         self._preprocessor = None
 
