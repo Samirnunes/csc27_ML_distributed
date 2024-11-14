@@ -1,11 +1,12 @@
-from abc import ABC
-
-import pandas as pd
-import numpy as np
 from abc import ABC, abstractmethod
+
+import numpy as np
+import pandas as pd
+
 
 class BaseServer(ABC):
     pass
+
 
 class BaseModel(ABC):
     """
@@ -14,7 +15,7 @@ class BaseModel(ABC):
     This class defines the basic structure for any machine learning model,
     requiring the implementation of methods for fitting and predicting.
     """
-    
+
     def __str__(self):
         return self.__class__.__name__
 

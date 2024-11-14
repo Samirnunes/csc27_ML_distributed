@@ -1,11 +1,12 @@
 from typing import List
+
 from csc27_ML_distributed.server.models.base import BaseModel
 from csc27_ML_distributed.server.models.ml_models import (
+    DecisionTreeClassifierModel,
+    DecisionTreeRegressorModel,
     DummyModel,
     LinearClassifierModel,
     LinearRegressorModel,
-    DecisionTreeClassifierModel,
-    DecisionTreeRegressorModel,
 )
 
 

@@ -1,4 +1,4 @@
-from xmlrpc.server import SimpleXMLRPCServer, SimpleXMLRPCRequestHandler
+from xmlrpc.server import SimpleXMLRPCRequestHandler, SimpleXMLRPCServer
 
 from csc27_ML_distributed.server.log import logger
 from csc27_ML_distributed.server.models.base import BaseServer

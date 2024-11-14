@@ -1,6 +1,7 @@
-import os
 import argparse
+import os
 from typing import Literal
+
 from pydantic_settings import BaseSettings
 
 
@@ -18,7 +19,9 @@ def _verify_local_config() -> argparse.Namespace:
         os.environ["MODEL"] = "dummy"
         os.environ["DATA_DIR"] = "data/A"
 
+
 _verify_local_config()
+
 
 class _RPCConfig(BaseSettings):
     HOST: str = "localhost"

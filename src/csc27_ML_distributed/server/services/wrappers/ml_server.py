@@ -1,17 +1,20 @@
 import json
 import pickle
 from pathlib import Path
+from typing import Dict, List, Union
 from xmlrpc.client import Binary
+
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from typing import List, Dict, Union
-from csc27_ML_distributed.server.models.base import BaseServer
-from csc27_ML_distributed.server.models.base import BaseModel
-from csc27_ML_distributed.server.models.ml_model import MLModelsDict
-from csc27_ML_distributed.server.models.ml_metric import MLRegressionMetrics, MLClassificationMetrics
-from csc27_ML_distributed.server.models.config import ML_SERVER_CONFIG
 from csc27_ML_distributed.server.log import logger
+from csc27_ML_distributed.server.models.base import BaseModel, BaseServer
+from csc27_ML_distributed.server.models.config import ML_SERVER_CONFIG
+from csc27_ML_distributed.server.models.ml_metric import (
+    MLClassificationMetrics,
+    MLRegressionMetrics,
+)
+from csc27_ML_distributed.server.models.ml_model import MLModelsDict
 
 FeatureType = Dict[str, List[Union[int, float, str]]]
 LabelType = List[Union[int, float, str]]
@@ -83,39 +86,38 @@ class MLServer(BaseServer):
         df_features = pd.DataFrame(features)
         prediction = self._model.predict(df_features)
         return json.dumps(prediction.tolist())
-    
+
     def send_model(self) -> bytes:
         if self._fitted:
             return pickle.dumps(self._model)
         logger.warning("send_model failed. You must call the fit function first.")
-    
+
     def evaluate(self, models: List[bytes | Binary]) -> str:
         metric_objs = []
-        
+
         if not self._CONFIG.PROBLEM_TYPE in ["regression", "classification"]:
             e = "PROBLEM_TYPE must be either regression or classification."
             logger.error(e)
             raise ValueError
-         
+
         if self._CONFIG.PROBLEM_TYPE == "regression":
             metrics_type = MLRegressionMetrics
         elif self._CONFIG.PROBLEM_TYPE == "classification":
             metrics_type = MLClassificationMetrics
-            
+
         for model in models:
             if isinstance(model, Binary):
                 model = model.data
             model = pickle.loads(model)
             y_pred = model.predict(self._X_test)
             metric_objs.append(metrics_type.from_labels(self._y_test, y_pred))
-        
+
         aggregate = dict.fromkeys(metrics_type().__dict__.keys(), 0)
         for metric_obj in metric_objs:
             for metric, value in metric_obj.__dict__.items():
                 aggregate[metric] += value
-        
-        for metric in aggregate.keys():
-            aggregate[metric] = aggregate[metric]/len(models)
-            
-        return json.dumps(aggregate)
 
+        for metric in aggregate.keys():
+            aggregate[metric] = aggregate[metric] / len(models)
+
+        return json.dumps(aggregate)

@@ -1,5 +1,5 @@
-from csc27_ML_distributed.server.services.wrappers import RPC
-from csc27_ML_distributed.server.services.wrappers import MLServer
+from csc27_ML_distributed.server.services.wrappers import RPC, MLServer
+
 
 class RPCMLServer:
     """Façade for MLServer + RPC classes"""
