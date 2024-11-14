@@ -1,5 +1,12 @@
+import os
 import pandas as pd
 from xmlrpc.client import ServerProxy
+
+# In production, this should not exist,
+# these variables must be injected in the env
+os.environ["HOST"] = "0.0.0.0"
+os.environ["PORT"] = "80"
+os.environ["MODEL"] = "tree-regressor"
 
 df_train = pd.read_csv("../../data/train_A.csv")
 df_test = pd.read_csv("../../data/test.csv")

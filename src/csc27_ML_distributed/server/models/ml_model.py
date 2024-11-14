@@ -1,6 +1,6 @@
 from typing import List
 from csc27_ML_distributed.server.models.base import BaseModel
-from csc27_ML_distributed.server.models.ml import (
+from csc27_ML_distributed.server.models.ml_models import (
     DummyModel,
     LinearClassifierModel,
     LinearRegressorModel,
@@ -9,7 +9,7 @@ from csc27_ML_distributed.server.models.ml import (
 )
 
 
-class MLModelDict:
+class MLModelsDict:
     _MODELS = {
         "dummy": DummyModel(),
         "linear-classifier": LinearClassifierModel(),

@@ -1,35 +1,37 @@
 import os
 import argparse
+from typing import Literal
 from pydantic_settings import BaseSettings
 
 
-def _parse_args() -> argparse.Namespace:
+def _verify_local_config() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the app with options.")
     parser.add_argument(
         "--local", action="store_true", help="Run the app in local mode"
     )
-    return parser.parse_args()
 
+    args = parser.parse_args()
+    if args.local:
+        os.environ["PYTHONPATH"] = "src/"
+        os.environ["HOST"] = "localhost"
+        os.environ["PORT"] = "8080"
+        os.environ["MODEL"] = "dummy"
+        os.environ["DATA_DIR"] = "data/A"
 
-if _parse_args().local:
-    os.environ["HOST"] = "localhost"
-    os.environ["PORT"] = "8080"
-    os.environ["MODEL"] = "dummy"
-else:
-    # In production, this should not exist,
-    # these variables must be injected in the env
-    os.environ["HOST"] = "0.0.0.0"
-    os.environ["PORT"] = "80"
-    os.environ["MODEL"] = "tree-regressor"
-
+_verify_local_config()
 
 class _RPCConfig(BaseSettings):
-    HOST: str
-    PORT: int
+    HOST: str = "localhost"
+    PORT: int = "8080"
 
 
 class _MLConfig(BaseSettings):
-    MODEL: str
+    PROBLEM_TYPE: Literal["regression", "classification"] = "regression"
+    MODEL: str = "tree-regressor"
+    LABEL: str = "SalePrice"
+    DATA_DIR: str = "data/A"
+    RANDOM_STATE: int = 0
+    TEST_SIZE: float = 0.3
 
 
 RPC_CONFIG = _RPCConfig()
