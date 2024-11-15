@@ -9,6 +9,8 @@ import (
 	"proxy/predict"
 )
 
+
+
 func main(){
 	file, err := os.Open("test.csv")
 	if err != nil {
@@ -37,6 +39,7 @@ func main(){
 		}
 	}
 	log.Println("Connecting to ML servers: A, B, C")
+
 	fit.Fit()
 	predict.Predict(result)
 	evaluate.Evaluate()

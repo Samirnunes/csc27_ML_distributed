@@ -5,24 +5,69 @@ import (
 	"encoding/json"
 	"log"
 	"proxy/connect"
+	"sync"
+
+	"github.com/kolo/xmlrpc"
 )
 
 type Metrics map[string]float64
 
-func Aggregate(metrics map[string]Metrics) Metrics {
+var models [][]byte
+var metrics []Metrics
+var mutex sync.Mutex
+
+func initVars() {
+	models = make([][]byte, 0)
+	metrics = make([]Metrics, 0)
+}
+
+func receiveModel(client *xmlrpc.Client, wg *sync.WaitGroup) {
+	log.Println("Receiving models...")
+	var base64Data string
+	if err := client.Call("send_model", nil, &base64Data); err != nil {
+		log.Fatalf("Error during sending model: %v", err)
+	}
+	model, err := base64.StdEncoding.DecodeString(base64Data)
+	if err != nil {
+		log.Fatalf("Failed to decode base64 data: %v", err)
+	}
+	mutex.Lock()
+	models = append(models, model)
+	mutex.Unlock()
+	wg.Done()
+}
+
+func evaluate(client *xmlrpc.Client, wg *sync.WaitGroup) {
+	log.Println("Getting evaluation metrics...")
+	var result string
+
+	if err := client.Call("evaluate", models, &result); err != nil {
+		log.Fatalf("Error during evaluation: %v", err)
+	}
+
+	var metric Metrics
+	if err := json.Unmarshal([]byte(result), &metric); err != nil {
+		log.Fatalf("Error during metric unmarshaling: %v", err)
+	}
+	mutex.Lock()
+	metrics = append(metrics, metric)
+	mutex.Unlock()
+	wg.Done()
+}
+
+func aggregate(metrics []Metrics) Metrics {
 	aggregated := make(Metrics)
 	count := float64(len(metrics))
 
-	for _, metricValues := range metrics {
-		for metric := range metricValues {
-			aggregated[metric] = 0
+	for _, metric := range metrics {
+		for name := range metric {
+			aggregated[name] = 0
 		}
-		break
 	}
 
-	for _, metricValues := range metrics {
-		for metric, value := range metricValues {
-			aggregated[metric] += value
+	for _, metric := range metrics {
+		for name, value := range metric {
+			aggregated[name] += value
 		}
 	}
 
@@ -34,42 +79,26 @@ func Aggregate(metrics map[string]Metrics) Metrics {
 }
 
 func Evaluate() Metrics {
+	var wg sync.WaitGroup
+	initVars()
 	servers := connect.InitRPCConnections()
 
-	metrics := make(map[string]Metrics)
-	var models [][]byte
-
-	log.Println("Receiving models...")
 	for _, client := range servers.Clients {
 		defer client.Close()
-		var base64Data string
-		if err := client.Call("send_model", nil, &base64Data); err != nil {
-			log.Fatalf("Error during sending model: %v", err)
-		}
-		modelData, err := base64.StdEncoding.DecodeString(base64Data)
-		if err != nil {
-			log.Fatalf("Failed to decode base64 data: %v", err)
-		}
-
-		models = append(models, modelData)
+		wg.Add(1)
+		go receiveModel(client, &wg) 
 	}
 
-	log.Println("Getting evaluation metrics...")
-	for i, client := range servers.Clients {
-		var result string
+	wg.Wait()
 
-		if err := client.Call("evaluate", models, &result); err != nil {
-			log.Fatalf("Error during evaluation: %v", err)
-		}
-
-		var metric Metrics
-		if err := json.Unmarshal([]byte(result), &metric); err != nil {
-			log.Fatalf("Error during metric unmarshaling: %v", err)
-		}
-		metrics[servers.ServerNames[i]] = metric
+	for _, client := range servers.Clients {
+		wg.Add(1)
+		go evaluate(client, &wg)
 	}
 
-	aggregated := Aggregate(metrics)
+	wg.Wait()
+
+	aggregated := aggregate(metrics)
 	log.Printf("Aggregated metrics:\n%v\n\n", aggregated)
 	return aggregated
 }
