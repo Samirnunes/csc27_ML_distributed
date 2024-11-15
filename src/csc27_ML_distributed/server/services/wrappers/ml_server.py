@@ -5,6 +5,7 @@ from typing import Dict, List, Union
 from xmlrpc.client import Binary
 
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
 
 from csc27_ML_distributed.server.log import logger
@@ -68,7 +69,7 @@ class MLServer(BaseServer):
     def fit(self) -> str:
         """
         Trains the machine learning model with the provided features and labels.
-        """
+        """        
         logger.info("Training model...")
         self._model.fit(features=self._X_train, labels=self._y_train)
         logger.info("Model trained successfully")
@@ -85,18 +86,20 @@ class MLServer(BaseServer):
         Returns:
             LabelType: A list of predicted values.
         """
-        df_features = pd.DataFrame(features)
-        prediction = self._model.predict(df_features)
-        return json.dumps(prediction.tolist())
-
+        features = pd.DataFrame(features, index=[0])
+        return json.dumps({
+            "Prediction": self._model.predict(features).tolist(),
+            "ProblemType": self._CONFIG.PROBLEM_TYPE
+        })
+        
     def send_model(self) -> bytes:
         if self._fitted:
             return pickle.dumps(self._model)
         logger.warning("send_model failed. You must call the fit function first.")
 
-    def evaluate(self, models: List[bytes | Binary]) -> str:
+    def evaluate(self, models: List[bytes | Binary | List]) -> str:
         metric_objs = []
-
+    
         if not self._CONFIG.PROBLEM_TYPE in ["regression", "classification"]:
             e = "PROBLEM_TYPE must be either regression or classification."
             logger.error(e)
@@ -108,9 +111,7 @@ class MLServer(BaseServer):
             metrics_type = MLClassificationMetrics
 
         for model in models:
-            if isinstance(model, Binary):
-                model = model.data
-            model = pickle.loads(model)
+            model = self._parse_model(model)
             y_pred = model.predict(self._X_test)
             metric_objs.append(metrics_type.from_labels(self._y_test, y_pred))
 
@@ -123,3 +124,10 @@ class MLServer(BaseServer):
             aggregate[metric] = aggregate[metric] / len(models)
 
         return json.dumps(aggregate)
+    
+    def _parse_model(self, model: bytes | Binary | List):
+            if isinstance(model, Binary):
+                model = model.data
+            if isinstance(model, List):
+                model = bytes(model)
+            return pickle.loads(model)
