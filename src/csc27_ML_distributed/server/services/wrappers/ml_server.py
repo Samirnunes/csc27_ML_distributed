@@ -1,5 +1,6 @@
 import json
 import pickle
+import base64
 from pathlib import Path
 from typing import Dict, List, Union
 from xmlrpc.client import Binary
@@ -92,42 +93,48 @@ class MLServer(BaseServer):
             "ProblemType": self._CONFIG.PROBLEM_TYPE
         })
         
-    def send_model(self) -> bytes:
+    def send_model(self) -> bytes | str:
         if self._fitted:
             return pickle.dumps(self._model)
-        logger.warning("send_model failed. You must call the fit function first.")
+        e = "send_model failed. You must call the fit function first."
+        logger.error(e)
+        return json.dumps({f"error: {e}"})
 
-    def evaluate(self, models: List[bytes | Binary | List]) -> str:
+    def evaluate(self, models: List[bytes | Binary | List]) -> Dict[str, float]:
         metric_objs = []
-    
-        if not self._CONFIG.PROBLEM_TYPE in ["regression", "classification"]:
-            e = "PROBLEM_TYPE must be either regression or classification."
-            logger.error(e)
-            raise ValueError
+        
+        if self._fitted:
+            if not self._CONFIG.PROBLEM_TYPE in ["regression", "classification"]:
+                e = "PROBLEM_TYPE must be either regression or classification."
+                logger.error(e)
+                raise ValueError
 
-        if self._CONFIG.PROBLEM_TYPE == "regression":
-            metrics_type = MLRegressionMetrics
-        elif self._CONFIG.PROBLEM_TYPE == "classification":
-            metrics_type = MLClassificationMetrics
+            if self._CONFIG.PROBLEM_TYPE == "regression":
+                metrics_type = MLRegressionMetrics
+            elif self._CONFIG.PROBLEM_TYPE == "classification":
+                metrics_type = MLClassificationMetrics
 
-        for model in models:
-            model = self._parse_model(model)
-            y_pred = model.predict(self._X_test)
-            metric_objs.append(metrics_type.from_labels(self._y_test, y_pred))
+            for model in models:
+                model = self._parse_model(model)
+                y_pred = model.predict(self._X_test)
+                metric_objs.append(metrics_type.from_labels(self._y_test, y_pred))
 
-        aggregate = dict.fromkeys(metrics_type().__dict__.keys(), 0)
-        for metric_obj in metric_objs:
-            for metric, value in metric_obj.__dict__.items():
-                aggregate[metric] += value
+            aggregate = dict.fromkeys(metrics_type().__dict__.keys(), 0)
+            for metric_obj in metric_objs:
+                for metric, value in metric_obj.__dict__.items():
+                    aggregate[metric] += value
 
-        for metric in aggregate.keys():
-            aggregate[metric] = aggregate[metric] / len(models)
+            for metric in aggregate.keys():
+                aggregate[metric] = aggregate[metric] / len(models)
 
-        return json.dumps(aggregate)
+            return json.dumps(aggregate)
+        e = "evaluate failed. You must call the fit function first."
+        logger.error(e)
+        return json.dumps({f"error: {e}"})
     
     def _parse_model(self, model: bytes | Binary | List):
-            if isinstance(model, Binary):
-                model = model.data
-            if isinstance(model, List):
-                model = bytes(model)
-            return pickle.loads(model)
+        if isinstance(model, Binary):
+            model = model.data
+        if isinstance(model, List):
+            model = bytes(model)
+        return pickle.loads(model)

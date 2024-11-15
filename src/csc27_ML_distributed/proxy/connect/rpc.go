@@ -12,7 +12,7 @@ type Servers struct {
 }
 
 func InitRPCConnections() Servers{
-	serverAddresses := []string{"http://localhost:80", "http://localhost:81", "http://localhost:82"}
+	serverAddresses := []string{"http://ml-server-a:80", "http://ml-server-b:80", "http://ml-server-c:80"}
 	serverNames := []string{"server_a", "server_b", "server_c"}
 	
 	clients := make([]*xmlrpc.Client, len(serverAddresses))

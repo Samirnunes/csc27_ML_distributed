@@ -1,7 +1,7 @@
 FROM --platform=linux/amd64 golang:1.22.9-bookworm
 
 WORKDIR /app
-EXPOSE 8080
+EXPOSE 80
 
 # System update
 RUN apt-get update && \
@@ -16,6 +16,6 @@ RUN cd ./proxy && go mod download
 
 RUN find ./proxy -type f -name '*.go' -exec dos2unix {} \;
 
-RUN cd ./proxy && go build -o proxy-app /app/proxy/app/app.go
+RUN cd ./proxy && go build -o proxy-app /app/proxy/api/app.go
 
 CMD ["/bin/bash", "-c", "./proxy/proxy-app"]

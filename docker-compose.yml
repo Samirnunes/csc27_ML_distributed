@@ -55,8 +55,8 @@ services:
         stdin_open: true 
         tty: true
 
-    ml-proxy:
-        container_name: ml-proxy
+    proxy:
+        container_name: proxy
         build:
             context: .
             dockerfile: "Dockerfile.proxy"
