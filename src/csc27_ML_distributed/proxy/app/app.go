@@ -1,46 +1,62 @@
 package main
 
 import (
-	"encoding/csv"
+	"encoding/json"
 	"log"
-	"os"
+	"net/http"
 	"proxy/evaluate"
 	"proxy/fit"
 	"proxy/predict"
+
+	"github.com/gorilla/mux"
 )
 
+// Handlers for the endpoints
 
-
-func main(){
-	file, err := os.Open("test.csv")
-	if err != nil {
-		log.Fatalf("Error opening file: %v", err)
-	}
-	defer file.Close()
-
-	reader := csv.NewReader(file)
-
-	headers, err := reader.Read()
-	if err != nil {
-		log.Fatalf("Error reading headers: %v", err)
-	}
-
-	dataRow, err := reader.Read()
-	if err != nil {
-		log.Fatalf("Error reading data row: %v", err)
-	}
-
-	result := make(map[string]interface{})
-	for i, header := range headers {
-		if i < len(dataRow) {
-			result[header] = dataRow[i]
-		} else {
-			result[header] = nil
-		}
-	}
-	log.Println("Connecting to ML servers: A, B, C")
-
+// Fit handler
+func FitHandler(w http.ResponseWriter, r *http.Request) {
 	fit.Fit()
-	predict.Predict(result)
-	evaluate.Evaluate()
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Models trained successfully"))
+}
+
+// Predict handler
+func PredictHandler(w http.ResponseWriter, r *http.Request) {
+	var features map[string]interface{}
+
+	if err := json.NewDecoder(r.Body).Decode(&features); err != nil {
+		http.Error(w, "Invalid input", http.StatusBadRequest)
+		return
+	}
+
+	result := predict.Predict(features)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(result); err != nil {
+		log.Fatalf("Error encoding response: %v", err)
+	}
+}
+
+// Evaluate handler
+func EvaluateHandler(w http.ResponseWriter, r *http.Request) {
+	metrics := evaluate.Evaluate()
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(metrics); err != nil {
+		log.Fatalf("Error encoding response: %v", err)
+	}
+}
+
+func main() {
+	r := mux.NewRouter()
+
+	r.HandleFunc("/v1/ml-distributed/fit", FitHandler).Methods("POST")
+	r.HandleFunc("/v1/ml-distributed/predict", PredictHandler).Methods("POST")
+	r.HandleFunc("/v1/ml-distributed/evaluate", EvaluateHandler).Methods("POST")
+
+	log.Println("Server started at localhost:8080")
+	log.Fatal(http.ListenAndServe("localhost:8080", r))
 }
