@@ -1,0 +1,21 @@
+FROM --platform=linux/amd64 golang:1.22.9-bookworm
+
+WORKDIR /app
+EXPOSE 8080
+
+# System update
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends netcat-openbsd curl git wget bash ssh git openssh-client && \
+    rm -rf /var/lib/apt/lists/* /var/tmp/*
+
+COPY src/csc27_ML_distributed/proxy ./proxy
+
+COPY src/csc27_ML_distributed/proxy/go.mod src/csc27_ML_distributed/proxy/go.sum ./
+
+RUN cd ./proxy && go mod download
+
+RUN find ./proxy -type f -name '*.go' -exec dos2unix {} \;
+
+RUN cd ./proxy && go build -o proxy-app /app/proxy/app/app.go
+
+CMD ["/bin/bash", "-c", "./proxy/proxy-app"]

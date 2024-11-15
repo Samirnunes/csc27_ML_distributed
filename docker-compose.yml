@@ -55,6 +55,19 @@ services:
         stdin_open: true 
         tty: true
 
+    ml-proxy:
+        container_name: ml-proxy
+        build:
+            context: .
+            dockerfile: "Dockerfile.proxy"
+        networks:
+            app_network:
+                ipv4_address: 192.168.100.13
+        ports:
+            - "83:80"
+        stdin_open: true 
+        tty: true
+
 networks:
     app_network:
         driver: bridge

@@ -1,3 +1,0 @@
-FROM golang:1.23.0-alpine3.20
-
-# go install github.com/kolo/xmlrpc@latest
