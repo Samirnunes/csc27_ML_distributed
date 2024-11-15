@@ -54,7 +54,7 @@ class MLServer(BaseServer):
         self._y_train = pd.Series(self._y_train)
         self._y_test = pd.Series(self._y_test)
 
-    def set_model(self, model: str) -> None:
+    def set_model(self, model: str) -> str:
         if not model in self._MODEL_DICT:
             e = f"{model} isn't any of the values: {self._MODEL_DICT.values()}"
             logger.error(e)
@@ -65,7 +65,7 @@ class MLServer(BaseServer):
         self._model = new_model
         return json.dumps("ok")
 
-    def fit(self) -> None:
+    def fit(self) -> str:
         """
         Trains the machine learning model with the provided features and labels.
         """
