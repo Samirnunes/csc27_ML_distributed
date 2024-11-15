@@ -63,7 +63,7 @@ func mostFrequentPrediction(predictions []PredictResult) interface{} {
 func aggregate(allPredictions []PredictResult) (PredictResult, error) {
 	var aggregated PredictResult
 	if len(allPredictions) == 0 {
-		return aggregated, errors.New("Error: No predictions found")
+		return aggregated, errors.New("error: no predictions found")
 	}
 
 	problemType := allPredictions[0].ProblemType
@@ -73,14 +73,14 @@ func aggregate(allPredictions []PredictResult) (PredictResult, error) {
 			if predictionValues, ok := pred.Prediction.([]interface{}); ok {
 				sum += predictionValues[0].(float64)
 			} else {
-				return aggregated, errors.New("Error: Invalid prediction format in regression")
+				return aggregated, errors.New("error: invalid prediction format in regression")
 			}
 		}
 		aggregated.Prediction = sum / float64(len(allPredictions))
 	} else if problemType == "classification" {
 		aggregated.Prediction = mostFrequentPrediction(allPredictions)
 	} else {
-		return aggregated, errors.New("Error: Unknown problem type")
+		return aggregated, errors.New("error: unknown problem type")
 	}
 	aggregated.ProblemType = problemType
 	return aggregated, nil
@@ -98,7 +98,7 @@ func Predict(features map[string]interface{}) (PredictResult, error) {
 		defer client.Close()
 		go func(c *xmlrpc.Client) {
 			if err := getPrediction(c, features, &wg); err != nil {
-				log.Println("Error during getPrediction:", err)
+				log.Println("error during getPrediction:", err)
 			}
 		}(client)
 	}
