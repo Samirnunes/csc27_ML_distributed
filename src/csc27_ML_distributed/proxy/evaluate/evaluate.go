@@ -106,7 +106,6 @@ func Evaluate() (Metrics, error) {
 		return make(Metrics), app_err
 	}
 
-	// Second phase: evaluate models
 	for _, client := range servers.Clients {
 		wg.Add(1)
 		go func(c *xmlrpc.Client) {
