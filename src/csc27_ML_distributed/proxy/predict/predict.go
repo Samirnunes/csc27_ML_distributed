@@ -17,21 +17,23 @@ type PredictResult struct {
 
 var predictions []PredictResult
 var mutex sync.Mutex
+var app_err error
 
 func initVars() {
 	predictions = make([]PredictResult, 0)
+	app_err = nil
 }
 
 func getPrediction(client *xmlrpc.Client, features map[string]interface{}, wg *sync.WaitGroup) error {
 	var result string
 
 	if err := client.Call("predict", features, &result); err != nil {
-		return errors.New("Error during prediction: " + err.Error())
+		return errors.New("error during prediction: " + err.Error())
 	}
 
 	var prediction PredictResult
 	if err := json.Unmarshal([]byte(result), &prediction); err != nil {
-		return errors.New("Error unmarshaling prediction result: " + err.Error())
+		return errors.New("fit must be called first; error: " + err.Error())
 	}
 
 	mutex.Lock()
@@ -99,11 +101,17 @@ func Predict(features map[string]interface{}) (PredictResult, error) {
 		go func(c *xmlrpc.Client) {
 			if err := getPrediction(c, features, &wg); err != nil {
 				log.Println("error during getPrediction:", err)
+				app_err = err
+				wg.Done()
 			}
 		}(client)
 	}
 
 	wg.Wait()
+	
+	if app_err != nil {
+		return PredictResult{}, app_err
+	}
 
 	log.Println(predictions)
 

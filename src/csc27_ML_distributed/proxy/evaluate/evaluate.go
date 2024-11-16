@@ -16,21 +16,23 @@ type Metrics map[string]float64
 var models [][]byte
 var metrics []Metrics
 var mutex sync.Mutex
+var app_err error
 
 func initVars() {
 	models = make([][]byte, 0)
 	metrics = make([]Metrics, 0)
+	app_err = nil
 }
 
 func receiveModel(client *xmlrpc.Client, wg *sync.WaitGroup) error {
 	log.Println("Receiving models...")
 	var base64Data string
 	if err := client.Call("send_model", nil, &base64Data); err != nil {
-		return errors.New("Error during sending model: " + err.Error())
+		return errors.New("error during sending model: " + err.Error())
 	}
 	model, err := base64.StdEncoding.DecodeString(base64Data)
 	if err != nil {
-		return errors.New("Failed to decode base64 data: " + err.Error())
+		return errors.New("fit must be called first; error: " + err.Error())
 	}
 	mutex.Lock()
 	models = append(models, model)
@@ -44,12 +46,12 @@ func evaluate(client *xmlrpc.Client, wg *sync.WaitGroup) error {
 	var result string
 
 	if err := client.Call("evaluate", models, &result); err != nil {
-		return errors.New("Error during evaluation: " + err.Error())
+		return errors.New("error during evaluation: " + err.Error())
 	}
 
 	var metric Metrics
 	if err := json.Unmarshal([]byte(result), &metric); err != nil {
-		return errors.New("Error during metric unmarshaling: " + err.Error())
+		return errors.New("error during metric unmarshaling: " + err.Error())
 	}
 	mutex.Lock()
 	metrics = append(metrics, metric)
@@ -91,24 +93,36 @@ func Evaluate() (Metrics, error) {
 		wg.Add(1)
 		go func(c *xmlrpc.Client) {
 			if err := receiveModel(c, &wg); err != nil {
-				log.Println("Error during receiveModel:", err)
+				log.Println("error during receiveModel:", err)
+				app_err = err
+				wg.Done()
 			}
 		}(client)
 	}
 
 	wg.Wait()
+
+	if app_err != nil {
+		return make(Metrics), app_err
+	}
 
 	// Second phase: evaluate models
 	for _, client := range servers.Clients {
 		wg.Add(1)
 		go func(c *xmlrpc.Client) {
 			if err := evaluate(c, &wg); err != nil {
-				log.Println("Error during evaluate:", err)
+				log.Println("error during evaluate:", err)
+				app_err = err
+				wg.Done()
 			}
 		}(client)
 	}
 
 	wg.Wait()
+
+	if app_err != nil {
+		return make(Metrics), app_err
+	}
 
 	aggregated := aggregate(metrics)
 	log.Printf("Aggregated metrics:\n%v\n\n", aggregated)

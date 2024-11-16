@@ -98,7 +98,7 @@ class MLServer(BaseServer):
             return pickle.dumps(self._model)
         e = "send_model failed. You must call the fit function first."
         logger.error(e)
-        return json.dumps({f"error: {e}"})
+        return json.dumps(f"error: {e}")
 
     def evaluate(self, models: List[bytes | Binary | List]) -> Dict[str, float]:
         metric_objs = []
@@ -130,7 +130,7 @@ class MLServer(BaseServer):
             return json.dumps(aggregate)
         e = "evaluate failed. You must call the fit function first."
         logger.error(e)
-        return json.dumps({f"error: {e}"})
+        return json.dumps(f"error: {e}")
     
     def _parse_model(self, model: bytes | Binary | List):
         if isinstance(model, Binary):
