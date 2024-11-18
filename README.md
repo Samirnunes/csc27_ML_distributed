@@ -2,7 +2,9 @@
 
 ## Schema
 
-![schema](./docs/schema.png)
+<p align="center">
+    <img width="600" src="./docs/schema.png" alt="schema">
+<p>
 
 ## Running
 
