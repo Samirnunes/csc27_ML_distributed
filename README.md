@@ -8,7 +8,7 @@ Then, go to project's root directory (where the `docker-compose.yml` file is) an
 
 - `docker compose up`
 
-This will setup ML servers and a Proxy, which will be used to call the app.
+This will setup ML `servers` and a `proxy`, which will be used to call the app.
 
 Finally, you can test the endpoints:
 
