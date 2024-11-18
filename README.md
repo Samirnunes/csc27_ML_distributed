@@ -1,5 +1,9 @@
 # [CSC-27 Exam] Distributed Machine Learning (ML)
 
+## Schema
+
+![schema](./docs/schema.png)
+
 ## Running
 
 Firstly, execute Docker (on Windows, you must open Docker Desktop).
