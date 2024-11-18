@@ -1,22 +1,20 @@
 import json
 import pickle
-import base64
 from pathlib import Path
 from typing import Dict, List, Union
 from xmlrpc.client import Binary
 
 import pandas as pd
-import numpy as np
 from sklearn.model_selection import train_test_split
 
 from csc27_ML_distributed.server.log import logger
 from csc27_ML_distributed.server.models.base import BaseModel, BaseServer
-from csc27_ML_distributed.server.config import ML_SERVER_CONFIG
-from csc27_ML_distributed.server.models.ml_metric import (
-    MLClassificationMetrics,
+from csc27_ML_distributed.server.config import (
+    ML_SERVER_CONFIG,
+    ML_MODELS,
     MLRegressionMetrics,
+    MLClassificationMetrics,
 )
-from csc27_ML_distributed.server.models.ml_model import MLModelsDict
 
 FeatureType = Dict[str, List[Union[int, float, str]]]
 LabelType = List[Union[int, float, str]]
@@ -31,14 +29,14 @@ class MLServer(BaseServer):
     """
 
     _CONFIG = ML_SERVER_CONFIG
-    _MODEL_DICT = MLModelsDict()
+    _ML_MODELS = ML_MODELS
 
     def __init__(self) -> None:
         """
         Initializes the MLServer instance with the specified host and port.
         """
         logger.info(f"**Serving with the following settings:\n{self._CONFIG}")
-        self._model: BaseModel = self._MODEL_DICT[self._CONFIG.MODEL]
+        self._model: BaseModel = self._ML_MODELS[self._CONFIG.MODEL]
         self._fitted = False
 
         data: pd.DataFrame = pd.read_csv(
@@ -57,12 +55,12 @@ class MLServer(BaseServer):
         self._y_test = pd.Series(self._y_test)
 
     def set_model(self, model: str) -> str:
-        if not model in self._MODEL_DICT:
-            e = f"{model} isn't any of the values: {self._MODEL_DICT.values()}"
+        if not model in self._ML_MODELS:
+            e = f"{model} isn't any of the values: {self._ML_MODELS.values()}"
             logger.error(e)
             raise ValueError
 
-        new_model = self._MODEL_DICT[model]
+        new_model = self._ML_MODELS[model]
         logger.info(f"**Changing model from {self._model} to {new_model}")
         self._model = new_model
         return json.dumps("ok")
@@ -70,7 +68,7 @@ class MLServer(BaseServer):
     def fit(self) -> str:
         """
         Trains the machine learning model with the provided features and labels.
-        """        
+        """
         logger.info("Training model...")
         self._model.fit(features=self._X_train, labels=self._y_train)
         logger.info("Model trained successfully")
@@ -88,11 +86,13 @@ class MLServer(BaseServer):
             LabelType: A list of predicted values.
         """
         features = pd.DataFrame(features, index=[0])
-        return json.dumps({
-            "Prediction": self._model.predict(features).tolist(),
-            "ProblemType": self._CONFIG.PROBLEM_TYPE
-        })
-        
+        return json.dumps(
+            {
+                "Prediction": self._model.predict(features).tolist(),
+                "ProblemType": self._CONFIG.PROBLEM_TYPE,
+            }
+        )
+
     def send_model(self) -> bytes | str:
         if self._fitted:
             return pickle.dumps(self._model)
@@ -102,7 +102,7 @@ class MLServer(BaseServer):
 
     def evaluate(self, models: List[bytes | Binary | List]) -> Dict[str, float]:
         metric_objs = []
-        
+
         if self._fitted:
             if not self._CONFIG.PROBLEM_TYPE in ["regression", "classification"]:
                 e = "PROBLEM_TYPE must be either regression or classification."
@@ -131,7 +131,7 @@ class MLServer(BaseServer):
         e = "evaluate failed. You must call the fit function first."
         logger.error(e)
         return json.dumps(f"error: {e}")
-    
+
     def _parse_model(self, model: bytes | Binary | List):
         if isinstance(model, Binary):
             model = model.data

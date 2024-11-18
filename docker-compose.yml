@@ -1,10 +1,12 @@
 x-global-envs:
   &global-envs
     PROBLEM_TYPE: regression
-    MODEL: tree-regressor
+    MODEL: house-pricing-tree-regressor
     LABEL: SalePrice
     RANDOM_STATE: 0
     TEST_SIZE: 0.3
+    HOST: "0.0.0.0"
+    PORT: 80
 
 services:
     ml-server-a:
@@ -14,7 +16,7 @@ services:
             dockerfile: "Dockerfile.server"
         environment:
             <<: *global-envs
-            DATA_DIR: data/A
+            DATA_DIR: data/house_pricing/A
         networks:
             app_network:
                 ipv4_address: 192.168.100.10
@@ -30,7 +32,7 @@ services:
             dockerfile: "Dockerfile.server"
         environment:
             <<: *global-envs
-            DATA_DIR: data/B
+            DATA_DIR: data/house_pricing/B
         networks:
             app_network:
                 ipv4_address: 192.168.100.11
@@ -46,7 +48,7 @@ services:
             dockerfile: "Dockerfile.server"
         environment:
             <<: *global-envs
-            DATA_DIR: data/C
+            DATA_DIR: data/house_pricing/C
         networks:
             app_network:
                 ipv4_address: 192.168.100.12
