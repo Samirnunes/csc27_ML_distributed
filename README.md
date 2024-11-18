@@ -12,9 +12,13 @@ This will setup ML servers and a Proxy, which will be used to call the app.
 
 Finally, you can test the endpoints:
 
-- (POST) `localhost:83/v1/ml-distributed/fit` (must be run first)
+- (POST) `localhost:83/v1/ml-distributed/fit` 
 
 - (POST) `localhost:83/v1/ml-distributed/evaluate`
+
+- (POST) `localhost:83/v1/ml-distributed/predict`
+
+`fit` must be run first so `evaluate` and `predict` can work. Besides, for `predict` you must pass the features' values as parameters to the request.
 
 ## References
 
