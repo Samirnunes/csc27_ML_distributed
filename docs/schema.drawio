@@ -84,13 +84,13 @@
         <mxCell id="WJ8f-q0Ck-yod8A7DQjw-25" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;localhost:90&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="100" y="220" width="120" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="WJ8f-q0Ck-yod8A7DQjw-26" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;ml-server-a:80&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+        <mxCell id="WJ8f-q0Ck-yod8A7DQjw-26" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;ml-server-1:80&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="600" y="80" width="120" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="WJ8f-q0Ck-yod8A7DQjw-27" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;ml-server-b:80&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+        <mxCell id="WJ8f-q0Ck-yod8A7DQjw-27" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;ml-server-2:80&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="600" y="220" width="120" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="WJ8f-q0Ck-yod8A7DQjw-28" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;ml-server-c:80&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
+        <mxCell id="WJ8f-q0Ck-yod8A7DQjw-28" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;ml-server-3:80&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
           <mxGeometry x="600" y="360" width="120" height="30" as="geometry" />
         </mxCell>
         <mxCell id="WJ8f-q0Ck-yod8A7DQjw-29" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;proxy:80&lt;/font&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
