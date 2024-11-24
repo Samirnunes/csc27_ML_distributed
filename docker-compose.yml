@@ -1,16 +1,15 @@
 x-global-envs:
   &global-envs
+    ML_SERVERS_NUMBER: 4
     PROBLEM_TYPE: regression
     MODEL: house-pricing-tree-regressor
     LABEL: SalePrice
     RANDOM_STATE: 0
     TEST_SIZE: 0.3
-    HOST: "0.0.0.0"
-    PORT: 80
 
 services:
-    ml-server-a:
-        container_name: ml-server-a
+    ml-server-1:
+        container_name: ml-server-1
         build:
             context: .
             dockerfile: "Dockerfile.server"
@@ -25,8 +24,8 @@ services:
         stdin_open: true 
         tty: true
 
-    ml-server-b:
-        container_name: ml-server-b
+    ml-server-2:
+        container_name: ml-server-2
         build:
             context: .
             dockerfile: "Dockerfile.server"
@@ -41,8 +40,8 @@ services:
         stdin_open: true 
         tty: true
 
-    ml-server-c:
-        container_name: ml-server-c
+    ml-server-3:
+        container_name: ml-server-3
         build:
             context: .
             dockerfile: "Dockerfile.server"
@@ -57,16 +56,34 @@ services:
         stdin_open: true 
         tty: true
 
-    proxy:
-        container_name: proxy
+    ml-server-4:
+        container_name: ml-server-4
         build:
             context: .
-            dockerfile: "Dockerfile.proxy"
+            dockerfile: "Dockerfile.server"
+        environment:
+            <<: *global-envs
+            DATA_DIR: data/house_pricing/C
         networks:
             app_network:
                 ipv4_address: 192.168.100.13
         ports:
             - "83:80"
+        stdin_open: true 
+        tty: true
+
+    proxy:
+        container_name: proxy
+        build:
+            context: .
+            dockerfile: "Dockerfile.proxy"
+        environment:
+            <<: *global-envs
+        networks:
+            app_network:
+                ipv4_address: 192.168.100.20
+        ports:
+            - "90:80"
         stdin_open: true 
         tty: true
 
