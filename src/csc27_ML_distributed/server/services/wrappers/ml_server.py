@@ -1,20 +1,20 @@
 import json
 import pickle
 from pathlib import Path
-from typing import Dict, List, Union
+from typing import Any, Dict, List, Union
 from xmlrpc.client import Binary
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
+from csc27_ML_distributed.server.config import (
+    ML_MODELS,
+    ML_SERVER_CONFIG,
+    MLClassificationMetrics,
+    MLRegressionMetrics,
+)
 from csc27_ML_distributed.server.log import logger
 from csc27_ML_distributed.server.models.base import BaseModel, BaseServer
-from csc27_ML_distributed.server.config import (
-    ML_SERVER_CONFIG,
-    ML_MODELS,
-    MLRegressionMetrics,
-    MLClassificationMetrics,
-)
 
 FeatureType = Dict[str, List[Union[int, float, str]]]
 LabelType = List[Union[int, float, str]]
@@ -100,7 +100,7 @@ class MLServer(BaseServer):
         logger.error(e)
         return json.dumps(f"error: {e}")
 
-    def evaluate(self, models: List[bytes | Binary | List]) -> Dict[str, float]:
+    def evaluate(self, models: List[bytes | Binary | List] | Any) -> Any:
         metric_objs = []
 
         if self._fitted:
@@ -132,7 +132,7 @@ class MLServer(BaseServer):
         logger.error(e)
         return json.dumps(f"error: {e}")
 
-    def _parse_model(self, model: bytes | Binary | List):
+    def _parse_model(self, model: bytes | Binary | List) -> Any:
         if isinstance(model, Binary):
             model = model.data
         if isinstance(model, List):

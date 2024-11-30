@@ -32,7 +32,7 @@ class _MLModels:
     def __contains__(self, key: str) -> bool:
         return key in self._MODELS
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return repr(self._MODELS)
 
     def values(self) -> List[BaseModel]:

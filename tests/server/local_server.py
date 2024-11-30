@@ -1,5 +1,6 @@
-import pandas as pd
 from xmlrpc.client import ServerProxy
+
+import pandas as pd
 
 df_test = pd.read_csv("../../data/other/test.csv")
 

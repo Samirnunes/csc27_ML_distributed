@@ -10,7 +10,7 @@ class RPC:
     class _RequestHandler(SimpleXMLRPCRequestHandler):
         rpc_paths = ""
 
-    def __init__(self, server: BaseServer):
+    def __init__(self, server: BaseServer) -> None:
         self._rpc = SimpleXMLRPCServer(
             ("0.0.0.0", 80),
             requestHandler=RPC._RequestHandler,
@@ -19,7 +19,7 @@ class RPC:
         )
         self._rpc.register_instance(server)
 
-    def serve(self):
+    def serve(self) -> None:
         self._rpc.server_activate()
         logger.info(f"**Server is running on 0.0.0.0:80**")
         self._rpc.serve_forever()

@@ -1,8 +1,8 @@
-import os
 import json
 from typing import Dict
-from csc27_ML_distributed.server.log import logger
 from xmlrpc.client import ServerProxy
+
+from csc27_ML_distributed.server.log import logger
 
 # Conecta-se ao servidor XML-RPC
 
@@ -27,16 +27,16 @@ logger.info("Getting evaluation metrics...")
 for i, server in enumerate(servers):
     metrics[servers_names[i]] = json.loads(server.evaluate(models))
 
-def aggregate(metrics: Dict[str, Dict[str, float]]):
-    aggregated = dict.fromkeys(
-        list(metrics.values())[0].keys(), 0
-    )
+
+def aggregate(metrics: Dict[str, Dict[str, float]]) -> Dict:
+    aggregated = dict.fromkeys(list(metrics.values())[0].keys(), 0)
     for metrics_dict in metrics.values():
         for metric, value in metrics_dict.items():
             aggregated[metric] += value
     for metric in metrics_dict.keys():
-        aggregated[metric]= aggregated[metric] / len(metrics)
+        aggregated[metric] = aggregated[metric] / len(metrics)
 
     return aggregated
+
 
 logger.info(f"\nAggregated metrics:\n\n{aggregate(metrics)}")

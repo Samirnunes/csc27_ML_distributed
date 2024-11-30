@@ -21,7 +21,7 @@ services:
                 ipv4_address: 192.168.100.10
         ports:
             - "80:80"
-        stdin_open: true 
+        stdin_open: true
         tty: true
 
     ml-server-2:
@@ -37,7 +37,7 @@ services:
                 ipv4_address: 192.168.100.11
         ports:
             - "81:80"
-        stdin_open: true 
+        stdin_open: true
         tty: true
 
     ml-server-3:
@@ -53,7 +53,7 @@ services:
                 ipv4_address: 192.168.100.12
         ports:
             - "82:80"
-        stdin_open: true 
+        stdin_open: true
         tty: true
 
     ml-server-4:
@@ -69,7 +69,7 @@ services:
                 ipv4_address: 192.168.100.13
         ports:
             - "83:80"
-        stdin_open: true 
+        stdin_open: true
         tty: true
 
     proxy:
@@ -84,7 +84,7 @@ services:
                 ipv4_address: 192.168.100.20
         ports:
             - "90:80"
-        stdin_open: true 
+        stdin_open: true
         tty: true
 
 networks:

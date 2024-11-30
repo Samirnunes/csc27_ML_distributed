@@ -21,9 +21,9 @@ class MLRegressionMetrics:
     mean_squared_error: float = 0.0
     mean_squared_log_error: float = 0.0
 
-    @staticmethod
-    def from_labels(y_true: pd.DataFrame, y_pred: pd.DataFrame) -> Self:
-        return MLRegressionMetrics(
+    @classmethod
+    def from_labels(cls, y_true: pd.DataFrame, y_pred: pd.DataFrame) -> Self:
+        return cls(
             r2_score(y_true, y_pred),
             mean_absolute_error(y_true, y_pred),
             mean_squared_error(y_true, y_pred),
@@ -38,9 +38,9 @@ class MLClassificationMetrics:
     recall: float = 0.0
     f1_score: float = 0.0
 
-    @staticmethod
-    def from_labels(y_true: pd.DataFrame, y_pred: pd.DataFrame) -> Self:
-        return MLClassificationMetrics(
+    @classmethod
+    def from_labels(cls, y_true: pd.DataFrame, y_pred: pd.DataFrame) -> Self:
+        return cls(
             accuracy_score(y_true, y_pred),
             precision_score(y_true, y_pred),
             recall_score(y_true, y_pred),

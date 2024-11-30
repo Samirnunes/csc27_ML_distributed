@@ -26,4 +26,4 @@ func Fit(){
 		go fit(client, &wg)
 	}
 	wg.Wait()
-} 
+}

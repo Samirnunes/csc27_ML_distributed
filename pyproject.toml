@@ -6,6 +6,16 @@ authors = ["Samir Nunes da Silva <samir.silva12342@gmail.com>"]
 readme = "README.md"
 packages = [{include = "csc27_ML_distributed/server", from="src"}]
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.2"
+pytest-cov = "^5.0.0"
+ipykernel = "^6.29.5"
+pytest-asyncio = "^0.24.0"
+isort = "^5.13.2"
+black = "^24.10.0"
+mypy = "^1.13.0"
+pre-commit = "^4.0.1"
+
 [tool.poetry.dependencies]
 python = "^3.12"
 ipykernel = "^6.29.5"
@@ -17,6 +27,29 @@ scikit-learn = "^1.5.2"
 seaborn = "^0.13.2"
 pydantic = "^2.9.2"
 pydantic-settings = "^2.6.1"
+
+[tool.isort]
+profile = "black"
+skip = ["__init__.py"]
+
+[tool.black]
+exclude = '''
+/(
+    \.mypy_cache
+  | \.pytest_cache
+  | \.venv
+  | __pycache__
+)/
+'''
+
+[tool.mypy]
+ignore_missing_imports = true
+allow_redefinition = true
+follow_imports = "silent"
+disallow_untyped_defs = true
+warn_unreachable = true
+show_error_context = true
+disable_error_code = ["call-arg", "arg-type", "assignment"]
 
 
 [build-system]

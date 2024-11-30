@@ -12,7 +12,7 @@ import (
 
 type PredictResult struct {
 	Prediction interface{}
-	ProblemType string     
+	ProblemType string
 }
 
 var predictions []PredictResult
@@ -108,7 +108,7 @@ func Predict(features map[string]interface{}) (PredictResult, error) {
 	}
 
 	wg.Wait()
-	
+
 	if app_err != nil {
 		return PredictResult{}, app_err
 	}
