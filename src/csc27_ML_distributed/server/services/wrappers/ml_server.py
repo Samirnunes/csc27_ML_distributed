@@ -1,5 +1,6 @@
 import json
 import pickle
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any, Dict, List, Union
 from xmlrpc.client import Binary
@@ -101,7 +102,13 @@ class MLServer(BaseServer):
         return json.dumps(f"error: {e}")
 
     def evaluate(self, models: List[bytes | Binary | List] | Any) -> Any:
-        metric_objs = []
+        metric_objs: List = []
+
+        def _process_model(i: int, model: Any) -> Any:
+            model = self._parse_model(model)
+            logger.info(f"Predicting with model {i}: {model.__class__.__name__}")
+            y_pred = model.predict(self._X_test)
+            return metrics_type.from_labels(self._y_test, y_pred)
 
         if self._fitted:
             if not self._CONFIG.PROBLEM_TYPE in ["regression", "classification"]:
@@ -114,10 +121,17 @@ class MLServer(BaseServer):
             elif self._CONFIG.PROBLEM_TYPE == "classification":
                 metrics_type = MLClassificationMetrics
 
-            for model in models:
-                model = self._parse_model(model)
-                y_pred = model.predict(self._X_test)
-                metric_objs.append(metrics_type.from_labels(self._y_test, y_pred))
+            with ThreadPoolExecutor() as executor:
+                logger.info("New thread being created for evaluation...")
+                futures = []
+                for i, model in enumerate(models):
+                    futures.append(executor.submit(_process_model, i, model))
+                for future in as_completed(futures):
+                    try:
+                        metric_obj = future.result()
+                        metric_objs.append(metric_obj)
+                    except Exception as e:
+                        logger.error(f"Error during prediction: {e}")
 
             aggregate = dict.fromkeys(metrics_type().__dict__.keys(), 0)
             for metric_obj in metric_objs:
@@ -128,9 +142,9 @@ class MLServer(BaseServer):
                 aggregate[metric] = aggregate[metric] / len(models)
 
             return json.dumps(aggregate)
-        e = "evaluate failed. You must call the fit function first."
-        logger.error(e)
-        return json.dumps(f"error: {e}")
+        error = "evaluate failed. You must call the fit function first."
+        logger.error(error)
+        return json.dumps(f"error: {error}")
 
     def _parse_model(self, model: bytes | Binary | List) -> Any:
         if isinstance(model, Binary):

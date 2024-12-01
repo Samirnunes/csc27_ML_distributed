@@ -2,28 +2,24 @@ from typing import List
 
 from csc27_ML_distributed.server.models.base import BaseModel
 from csc27_ML_distributed.server.models.ml_models import (
-    DecisionTreeClassifierModel,
     DecisionTreeRegressorModel,
-    LinearClassifierModel,
     LinearRegressorModel,
 )
-from csc27_ML_distributed.server.models.preprocessor import HousePricingPreprocessor
+from csc27_ML_distributed.server.models.preprocessor import (
+    HousePricingPreprocessor,
+    MetroPreprocessor,
+)
 
 
 class _MLModels:
     _MODELS = {
-        "house-pricing-linear-classifier": LinearClassifierModel(
-            HousePricingPreprocessor()
-        ),
         "house-pricing-linear-regressor": LinearRegressorModel(
             HousePricingPreprocessor()
-        ),
-        "house-pricing-tree-classifier": DecisionTreeClassifierModel(
-            HousePricingPreprocessor(), 3, 10
         ),
         "house-pricing-tree-regressor": DecisionTreeRegressorModel(
             HousePricingPreprocessor(), 3, 10
         ),
+        "metro-tree-regressor": DecisionTreeRegressorModel(MetroPreprocessor(), 3, 10),
     }
 
     def __getitem__(self, key: str) -> BaseModel:

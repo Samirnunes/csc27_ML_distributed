@@ -53,6 +53,9 @@ func evaluate(client *xmlrpc.Client, wg *sync.WaitGroup) error {
 	if err := json.Unmarshal([]byte(result), &metric); err != nil {
 		return errors.New("error during metric unmarshaling: " + err.Error())
 	}
+
+	log.Println("Here evaluate")
+
 	mutex.Lock()
 	metrics = append(metrics, metric)
 	mutex.Unlock()
@@ -79,6 +82,8 @@ func aggregate(metrics []Metrics) Metrics {
 	for metric := range aggregated {
 		aggregated[metric] /= count
 	}
+
+	log.Println("Here aggregated")
 
 	return aggregated
 }

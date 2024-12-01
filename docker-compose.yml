@@ -4,6 +4,8 @@ x-global-envs:
     PROBLEM_TYPE: regression
     MODEL: house-pricing-tree-regressor
     LABEL: SalePrice
+    #MODEL: metro-tree-regressor
+    #LABEL: Oil_temperature
     RANDOM_STATE: 0
     TEST_SIZE: 0.3
 
@@ -15,6 +17,7 @@ services:
             dockerfile: "Dockerfile.server"
         environment:
             <<: *global-envs
+            #DATA_DIR: data/metro_reduced/A
             DATA_DIR: data/house_pricing/A
         networks:
             app_network:
@@ -31,6 +34,7 @@ services:
             dockerfile: "Dockerfile.server"
         environment:
             <<: *global-envs
+            #DATA_DIR: data/metro_reduced/B
             DATA_DIR: data/house_pricing/B
         networks:
             app_network:
@@ -47,6 +51,7 @@ services:
             dockerfile: "Dockerfile.server"
         environment:
             <<: *global-envs
+            #DATA_DIR: data/metro_reduced/C
             DATA_DIR: data/house_pricing/C
         networks:
             app_network:
@@ -63,7 +68,8 @@ services:
             dockerfile: "Dockerfile.server"
         environment:
             <<: *global-envs
-            DATA_DIR: data/house_pricing/C
+            #DATA_DIR: data/metro_reduced/D
+            DATA_DIR: data/house_pricing/D
         networks:
             app_network:
                 ipv4_address: 192.168.100.13

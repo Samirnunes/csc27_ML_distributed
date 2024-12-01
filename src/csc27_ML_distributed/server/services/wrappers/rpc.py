@@ -18,6 +18,7 @@ class RPC:
             logRequests=False,
         )
         self._rpc.register_instance(server)
+        self._rpc.socket.settimeout(300)
 
     def serve(self) -> None:
         self._rpc.server_activate()

@@ -2,7 +2,9 @@ package connect
 
 import (
 	"log"
+	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/kolo/xmlrpc"
 )
@@ -10,6 +12,20 @@ import (
 type Servers struct {
 	ServerAddresses, ServerNames []string
 	Clients                      []*xmlrpc.Client
+}
+
+func newClientWithCustomTransport(address string) (*xmlrpc.Client, error) {
+	transport := &http.Transport{
+		TLSHandshakeTimeout:    300 * time.Second,
+		IdleConnTimeout:        300 * time.Second,
+		MaxIdleConns:           10,
+		MaxIdleConnsPerHost:    10,
+		MaxResponseHeaderBytes: 100000,
+		WriteBufferSize:        100000,
+		ReadBufferSize:         100000,
+	}
+
+	return xmlrpc.NewClient(address, transport)
 }
 
 func InitRPCConnections() Servers {
@@ -26,7 +42,7 @@ func InitRPCConnections() Servers {
 	clients := make([]*xmlrpc.Client, len(serverAddresses))
 
 	for i, address := range serverAddresses {
-		client, err := xmlrpc.NewClient(address, nil)
+		client, err := newClientWithCustomTransport(address)
 		if err != nil {
 			log.Fatalf("Failed to connect to server %s: %v", address, err)
 		}
