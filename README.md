@@ -26,16 +26,6 @@ Finally, you can test the endpoints:
 
 `fit` must be run first so `evaluate` and `predict` can work. Besides, for `predict` you must pass the features' values as parameters to the request.
 
-### Notes on Testing
-
-Testing commands using `curl`:
-
-- Fit test: `curl -X POST http://localhost:80/v1/ml-distributed/fit`
-
-- Evaluate test: `curl -X POST http://localhost:80/v1/ml-distributed/evaluate`
-
-- Predict test: `curl -X POST http://localhost:80/v1/ml-distributed/predict -H "Content-Type: application/json" -d @./data/house_pricing/other/one_prediction_house_pricing_test.json`
-
 ## Fault Tolerance
 
 The fault tolerance handling is done in two separate steps with the objective of making the system robust and resilient to failures.
@@ -59,6 +49,22 @@ The failure of the proxy server is handled by redundancy. A load-balancing mecha
 4. The process is executed as expected, and the response is sent back to the client.
 
 It is important to notice that the fault tolerance handling is done in two separate and **independent** steps, which ensures that the system is robust and resilient to failures. Both of the failure handling mechanisms are implemented in the code and can be tested by stopping the ML servers and the proxy server.
+
+### Extra: Fault Tolerance in Nginx Load Balancer
+
+There is a final bottleneck to be issued, which is the nginx load balancer. If the load balancer fails, the system will not be able to redirect the requests to the available proxy servers. To handle this situation, a backup and independent load balancer can be implemented. So, if the main load balancer fails, the backup load balancer will take over and redirect the requests to the available proxy servers. This is a more complex and expensive solution, but it ensures that the system will be able to handle the requests even if the main load balancer fails.
+
+## Notes on Testing
+
+Testing commands using `curl`:
+
+- Fit test: `curl -X POST http://localhost:80/v1/ml-distributed/fit`
+
+- Evaluate test: `curl -X POST http://localhost:80/v1/ml-distributed/evaluate`
+
+- Predict test: `curl -X POST http://localhost:80/v1/ml-distributed/predict -H "Content-Type: application/json" -d @./data/house_pricing/other/one_prediction_house_pricing_test.json`
+
+**Additionally, if the main load balancer fails, the requests should be addressed to the backup load balancer in port :81.**
 
 ## References
 

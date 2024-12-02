@@ -101,9 +101,9 @@ services:
         stdin_open: true
         tty: true
 
-    nginx:
+    nginx-1:
         image: nginx:latest
-        container_name: nginx
+        container_name: nginx-1
         ports:
             - "80:80"
         volumes:
@@ -112,9 +112,23 @@ services:
             app_network:
                 ipv4_address: 192.168.100.30
 
+    nginx-2:
+        image: nginx:latest
+        container_name: nginx-2
+        ports:
+            - "81:80"
+        volumes:
+            - ./nginx.conf:/etc/nginx/nginx.conf
+        networks:
+            app_network:
+                ipv4_address: 192.168.100.31
+
+
 networks:
     app_network:
         driver: bridge
+        driver_opts:
+            com.docker.network.enable_multicast: "true"
         ipam:
             config:
                 - subnet: 192.168.100.0/24
