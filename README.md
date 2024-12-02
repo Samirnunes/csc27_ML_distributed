@@ -51,7 +51,7 @@ If a ML server fails, the proxy will detect, log the error, and continue without
 
 ### Step 2: Fault Tolerance in the Proxy Server
 
-The failure of the proxy server is handled by redundancy. A load-balancing mechanism is implemented using nginx, which will redirect the requests to the available servers. If one server fails, the proxy will redirect the requests to the other servers. The failure identification is via timeout. This ensures that, if the proxy server fails, regardless of the stage of the process (fitting, evaluating, or predicting), the system will still be able to handle the requests. Here's the summary of the fault tolerance handling in the proxy server:
+The failure of the proxy server is handled by redundancy. A load-balancing mechanism is implemented using nginx, which will redirect the requests to the available servers. If one server fails, the load balancer will redirect the requests to the other servers. The failure identification is via timeout. This ensures that, if the proxy server fails, regardless of the stage of the process (fitting, evaluating, or predicting), the system will still be able to handle the requests. Here's the summary of the fault tolerance handling in the proxy server:
 
 1. The client sends a request to the proxy server;
 2. The nginx load balancer redirects the request to the available proxy server;
