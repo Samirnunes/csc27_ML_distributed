@@ -2,9 +2,25 @@
 
 ## Schema
 
+For didacts purposes, a simplified schema of the system is shown below:
+
 <p align="center">
-    <img width="600" src="./docs/schema.png" alt="schema">
+    <img width="600" src="./docs/simplified_schema.png" alt="SimplifiedSchema">
 <p>
+
+It depicts the system's architecture, which is composed of three main components:
+
+1. **ML Servers**: responsible for fitting, evaluating, and predicting the model. The ML servers are implemented using Python language and a RPC mechanism, which allows the proxy server to call the ML servers and execute the desired operations;
+2. **Proxy Server**: responsible for receiving the requests from the client and redirecting them to the available ML servers. The proxy server is implemented in Go language and uses the RPC mechanism to call the ML servers;
+3. **Client**: responsible for sending the requests to the proxy server. The client can be implemented in any language that supports HTTP requests, such as Python, Go, or Curl.
+
+Alas, the full architecture of the system, which includes the scalability and fault tolerance mechanisms, is shown below:
+
+<p align="center">
+    <img width="600" src="./docs/fullSchema.png" alt="FullSchema">
+<p>
+
+The full architecture includes the fault tolerance, scalability and load balancing mechanisms. The fault tolerance is implemented in two separate steps, which ensures that the system is robust and resilient to failures. The scalability is implemented using the nginx load balancer, which redirects the requests to the available proxy servers. The load balancing mechanism ensures that the system can handle a large number of requests and distribute them evenly among the proxy servers. The fault tolerance and scalability mechanisms are implemented in the code and can be tested by stopping the ML servers and the proxy server.
 
 ## Running
 
