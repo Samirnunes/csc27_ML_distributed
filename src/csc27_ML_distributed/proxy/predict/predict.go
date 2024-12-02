@@ -25,22 +25,25 @@ func initVars() {
 }
 
 func getPrediction(client *xmlrpc.Client, features map[string]interface{}, wg *sync.WaitGroup) error {
-	var result string
+    defer wg.Done() // Ensure the WaitGroup is decremented
 
-	if err := client.Call("predict", features, &result); err != nil {
-		return errors.New("error during prediction: " + err.Error())
-	}
+    var result string
 
-	var prediction PredictResult
-	if err := json.Unmarshal([]byte(result), &prediction); err != nil {
-		return errors.New("fit must be called first; error: " + err.Error())
-	}
+    if err := client.Call("predict", features, &result); err != nil {
+        log.Println("error during prediction:", err)
+        return nil // Log the error and continue
+    }
 
-	mutex.Lock()
-	predictions = append(predictions, prediction)
-	mutex.Unlock()
-	wg.Done()
-	return nil
+    var prediction PredictResult
+    if err := json.Unmarshal([]byte(result), &prediction); err != nil {
+        log.Println("fit must be called first; error:", err)
+        return nil // Log the error and continue
+    }
+
+    mutex.Lock()
+    predictions = append(predictions, prediction)
+    mutex.Unlock()
+    return nil
 }
 
 // Helper function to calculate the most frequent prediction (for classification problems)

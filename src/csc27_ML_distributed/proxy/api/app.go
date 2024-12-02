@@ -21,21 +21,21 @@ func FitHandler(w http.ResponseWriter, r *http.Request) {
 	fit.Fit()
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Models trained successfully"))
+	w.Write([]byte("Models trained successfully\n"))
 }
 
 // Evaluate handler
 func EvaluateHandler(w http.ResponseWriter, r *http.Request) {
 	aggregated, err := evaluate.Evaluate()
 	if err != nil {
-		http.Error(w, "Failed to evaluate models: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Failed to evaluate models: "+err.Error()+"\n", http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(aggregated); err != nil {
-		http.Error(w, "Failed to encode response: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Failed to encode response: "+err.Error()+"\n", http.StatusInternalServerError)
 	}
 }
 
@@ -43,20 +43,20 @@ func EvaluateHandler(w http.ResponseWriter, r *http.Request) {
 func PredictHandler(w http.ResponseWriter, r *http.Request) {
 	var features map[string]interface{}
 	if err := json.NewDecoder(r.Body).Decode(&features); err != nil {
-		http.Error(w, "Failed to decode request body: "+err.Error(), http.StatusBadRequest)
+		http.Error(w, "Failed to decode request body: "+err.Error()+"\n", http.StatusBadRequest)
 		return
 	}
 
 	aggregated, err := predict.Predict(features)
 	if err != nil {
-		http.Error(w, "Failed to get prediction: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Failed to get prediction: "+err.Error()+"\n", http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	if err := json.NewEncoder(w).Encode(aggregated); err != nil {
-		http.Error(w, "Failed to encode response: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Failed to encode response: "+err.Error()+"\n", http.StatusInternalServerError)
 	}
 }
 
@@ -68,5 +68,5 @@ func main() {
 	r.HandleFunc("/v1/ml-distributed/predict", PredictHandler).Methods("POST")
 
 	log.Println("Proxy started at proxy:80")
-	log.Fatal(http.ListenAndServe("proxy:80", r))
+	log.Fatal(http.ListenAndServe(":80", r))
 }
