@@ -5,7 +5,7 @@
 For didacts purposes, a simplified schema of the system is shown below:
 
 <p align="center">
-    <img width="600" src="./docs/simplified_schema.png" alt="SimplifiedSchema">
+    <img width="600" src="./docs/simplifiedSchema.png" alt="SimplifiedSchema">
 <p>
 
 It depicts the system's architecture, which is composed of three main components:
